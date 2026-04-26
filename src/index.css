@@ -1,0 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400&display=swap");
+@import "tailwindcss";
+
+:root {
+  --color-primary: #f47c59;
+  --color-secondary: #241208;
+  --color-tertiary: #92cff2;
+  --color-neutral: #fcf9f6;
+  --color-text-primary: #241208;
+  --color-text-secondary: #fcf9f6;
+  --color-border: #241208;
+  --radius-sm: 2px;
+  --radius-pill: 9999px;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background-color: var(--color-neutral);
+  color: var(--color-text-primary);
+}
