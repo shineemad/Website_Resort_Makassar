@@ -184,14 +184,112 @@ const About = () => {
         }
 
         .about-link {
-          text-decoration: underline;
-          text-underline-offset: 6px;
-          text-decoration-thickness: 0.8px;
-          transition: color 300ms ease;
+          position: relative;
+          overflow: hidden;
+          isolation: isolate;
+          border: 0.8px solid rgba(36,18,8,0.28);
+          border-radius: 999px;
+          padding: 10px 18px;
+          background-color: rgba(252,249,246,0.78);
+          text-decoration: none;
+          transition: transform 560ms cubic-bezier(0.19, 1, 0.22, 1), color 420ms ease, border-color 420ms ease, background-color 420ms ease;
+          will-change: transform;
+        }
+
+        .about-link::before {
+          content: "";
+          position: absolute;
+          inset: -1px;
+          background: linear-gradient(112deg, rgba(244,124,89,0) 24%, rgba(244,124,89,0.2) 48%, rgba(244,124,89,0) 72%);
+          transform: translateX(-148%) skewX(-22deg);
+          transition: transform 820ms cubic-bezier(0.22, 1, 0.36, 1);
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .about-link > * {
+          position: relative;
+          z-index: 1;
+        }
+
+        .about-link .about-link-label {
+          transition: letter-spacing 420ms ease, transform 420ms cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .about-link .about-link-icon {
+          transition: transform 420ms cubic-bezier(0.19, 1, 0.22, 1);
+          transform-origin: center;
         }
 
         .about-link:hover {
-          color: ${T.primary};
+          color: ${T.neutral};
+          background-color: ${T.secondary};
+          border-color: ${T.secondary};
+          transform: translateY(-2px) scale(1.014);
+        }
+
+        .about-link:hover::before {
+          transform: translateX(148%) skewX(-22deg);
+        }
+
+        .about-link:hover .about-link-label {
+          letter-spacing: 1.45px;
+          transform: translateX(0.6px);
+        }
+
+        .about-link:hover .about-link-icon {
+          transform: translateX(1.5px) translateY(-0.5px) rotate(8deg);
+        }
+
+        .about-link:active {
+          transform: translateY(0) scale(0.99);
+        }
+
+        @media (min-width: 1280px) {
+          .about-link {
+            transition: transform 640ms cubic-bezier(0.19, 1, 0.22, 1), color 460ms ease, border-color 460ms ease, background-color 460ms ease;
+          }
+
+          .about-link:hover {
+            transform: translateY(-2.5px) scale(1.018);
+          }
+
+          .about-link::before {
+            transition-duration: 940ms;
+          }
+        }
+
+        @media (max-width: 767px) {
+          .about-link {
+            transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1), color 240ms ease, border-color 240ms ease, background-color 240ms ease;
+          }
+
+          .about-link:hover {
+            transform: translateY(-1px) scale(1.008);
+          }
+
+          .about-link::before {
+            transition-duration: 520ms;
+          }
+
+          .about-link:hover .about-link-label {
+            letter-spacing: 1.3px;
+            transform: none;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .about-link,
+          .about-link::before,
+          .about-link .about-link-label,
+          .about-link .about-link-icon {
+            transition: none;
+          }
+
+          .about-link:hover,
+          .about-link:active {
+            transform: none;
+          }
         }
       `}</style>
 
@@ -384,7 +482,7 @@ const About = () => {
 
               <div>
                 <a
-                  href="#"
+                  href="#facilities"
                   className="about-link inline-flex items-center gap-2"
                   style={{
                     fontFamily: T.body,
@@ -396,8 +494,10 @@ const About = () => {
                     color: T.secondary,
                   }}
                 >
-                  Jelajahi Fasilitas
-                  <ArrowUpRight style={{ width: "14px", height: "14px" }} />
+                  <span className="about-link-label">Jelajahi Fasilitas</span>
+                  <span className="about-link-icon">
+                    <ArrowUpRight style={{ width: "14px", height: "14px" }} />
+                  </span>
                 </a>
               </div>
             </div>

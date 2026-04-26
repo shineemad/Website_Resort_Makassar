@@ -12,6 +12,20 @@ const TOKENS = {
 };
 
 const Hero = () => {
+  const handleExploreClick = () => {
+    const target = document.getElementById("featured-rooms");
+    if (!target) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    target.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  };
+
   return (
     <>
       <style>{`
@@ -192,6 +206,7 @@ const Hero = () => {
             <button
               type="button"
               className="cta-btn inline-flex shrink-0 items-center gap-3"
+              onClick={handleExploreClick}
               style={{
                 fontFamily: TOKENS.bodyFont,
                 fontSize: "12px",

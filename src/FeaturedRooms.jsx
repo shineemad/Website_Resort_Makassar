@@ -1,5 +1,14 @@
-import React from "react";
-import { ArrowUpRight, BedDouble, Maximize2, Wifi } from "lucide-react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  BedDouble,
+  Maximize2,
+  Wifi,
+} from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const T = {
   primary: "#F47C59",
@@ -50,6 +59,30 @@ const ROOM_DATA = [
     eyebrow: "Signature Stay",
     popular: false,
   },
+  {
+    id: "04",
+    name: "Executive Ocean Corner",
+    desc: "Sudut kamar yang lebih privat dengan panorama laut terbuka dan pencahayaan senja yang dramatis untuk pengalaman menginap yang lebih tenang.",
+    size: "38m²",
+    bed: "King Bed",
+    price: "Rp 1.050.000",
+    image:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=80",
+    eyebrow: "Ocean Corner",
+    popular: false,
+  },
+  {
+    id: "05",
+    name: "Losari Family Suite",
+    desc: "Dirancang untuk perjalanan keluarga dengan ruang lebih lega, dua zona istirahat, dan suasana hangat yang tetap elegan sepanjang hari.",
+    size: "56m²",
+    bed: "King + Twin",
+    price: "Rp 1.850.000",
+    image:
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1600&q=80",
+    eyebrow: "Family Prestige",
+    popular: false,
+  },
 ];
 
 function Amenity({ icon: Icon, label }) {
@@ -72,19 +105,280 @@ function Amenity({ icon: Icon, label }) {
 }
 
 function FeaturedRooms() {
+  const sectionRef = useRef(null);
+  const headerRef = useRef(null);
+  const auraRef = useRef(null);
+  const scrollerRef = useRef(null);
+  const cardRefs = useRef([]);
+  const dragRef = useRef({
+    isPointerDown: false,
+    pointerId: null,
+    startX: 0,
+    startScrollLeft: 0,
+  });
+  const [activeCard, setActiveCard] = useState(0);
+  const activeRoom = ROOM_DATA[activeCard];
+
+  const scrollToCard = (index) => {
+    const scroller = scrollerRef.current;
+    const card = cardRefs.current[index];
+    if (!scroller || !card) return;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const targetLeft =
+      card.offsetLeft - (scroller.clientWidth - card.clientWidth) / 2;
+    scroller.scrollTo({
+      left: targetLeft,
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
+  };
+
+  const goPrev = () => {
+    const nextIndex = Math.max(0, activeCard - 1);
+    scrollToCard(nextIndex);
+  };
+
+  const goNext = () => {
+    const nextIndex = Math.min(ROOM_DATA.length - 1, activeCard + 1);
+    scrollToCard(nextIndex);
+  };
+
+  const onScrollerKeyDown = (event) => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      goPrev();
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      goNext();
+      return;
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      scrollToCard(0);
+      return;
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      scrollToCard(ROOM_DATA.length - 1);
+    }
+  };
+
+  useLayoutEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        headerRef.current?.children || [],
+        { y: 22, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          stagger: 0.09,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 78%",
+            once: true,
+          },
+        },
+      );
+
+      gsap.fromTo(
+        cardRefs.current,
+        { y: 26, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.64,
+          stagger: 0.06,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: scrollerRef.current,
+            start: "top 84%",
+            once: true,
+          },
+        },
+      );
+
+      if (auraRef.current) {
+        gsap.fromTo(
+          auraRef.current,
+          { yPercent: -4, scale: 1.02 },
+          {
+            yPercent: 4,
+            scale: 1.08,
+            ease: "none",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.8,
+            },
+          },
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return undefined;
+
+    let frameId = 0;
+
+    const updateActiveCard = () => {
+      frameId = 0;
+
+      const scrollerRect = scroller.getBoundingClientRect();
+      const scrollerCenter = scrollerRect.left + scrollerRect.width / 2;
+      const maxDistance = scrollerRect.width * 0.62;
+      let closestIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      cardRefs.current.forEach((card, index) => {
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const distance = Math.abs(scrollerCenter - cardCenter);
+        const signedDistance = (cardCenter - scrollerCenter) / maxDistance;
+        const normalized = Math.min(distance / maxDistance, 1);
+
+        const shiftX = Math.max(-14, Math.min(14, -signedDistance * 14));
+        const shiftY = normalized * 14;
+        const scale = 1.018 - normalized * 0.1;
+        const rotateY = -signedDistance * 10;
+
+        card.style.transform = `translate3d(${shiftX.toFixed(2)}px, ${shiftY.toFixed(2)}px, 0) scale(${scale.toFixed(3)}) rotateY(${rotateY.toFixed(2)}deg)`;
+        card.style.opacity = `${(1 - normalized * 0.2).toFixed(3)}`;
+        card.style.filter = `saturate(${(1 - normalized * 0.18).toFixed(3)})`;
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+
+      setActiveCard((prev) => (prev === closestIndex ? prev : closestIndex));
+    };
+
+    const onScroll = () => {
+      if (frameId) return;
+      frameId = window.requestAnimationFrame(updateActiveCard);
+    };
+
+    updateActiveCard();
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+      scroller.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return undefined;
+
+    const onPointerDown = (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+
+      dragRef.current.isPointerDown = true;
+      dragRef.current.pointerId = event.pointerId;
+      dragRef.current.startX = event.clientX;
+      dragRef.current.startScrollLeft = scroller.scrollLeft;
+
+      scroller.classList.add("is-dragging");
+      if (typeof scroller.setPointerCapture === "function") {
+        scroller.setPointerCapture(event.pointerId);
+      }
+    };
+
+    const onPointerMove = (event) => {
+      if (!dragRef.current.isPointerDown) return;
+
+      const walk = event.clientX - dragRef.current.startX;
+      scroller.scrollLeft = dragRef.current.startScrollLeft - walk;
+    };
+
+    const stopPointerDrag = () => {
+      dragRef.current.isPointerDown = false;
+      dragRef.current.pointerId = null;
+      scroller.classList.remove("is-dragging");
+    };
+
+    scroller.addEventListener("pointerdown", onPointerDown, {
+      passive: true,
+    });
+    scroller.addEventListener("pointermove", onPointerMove, {
+      passive: true,
+    });
+    scroller.addEventListener("pointerup", stopPointerDrag, {
+      passive: true,
+    });
+    scroller.addEventListener("pointercancel", stopPointerDrag, {
+      passive: true,
+    });
+    scroller.addEventListener("pointerleave", stopPointerDrag, {
+      passive: true,
+    });
+
+    return () => {
+      scroller.removeEventListener("pointerdown", onPointerDown);
+      scroller.removeEventListener("pointermove", onPointerMove);
+      scroller.removeEventListener("pointerup", stopPointerDrag);
+      scroller.removeEventListener("pointercancel", stopPointerDrag);
+      scroller.removeEventListener("pointerleave", stopPointerDrag);
+    };
+  }, []);
+
   return (
     <>
       <style>{`
+        .rooms-scroller {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          scroll-behavior: smooth;
+          perspective: 1400px;
+          scroll-padding-left: clamp(24px, 4vw, 48px);
+          scroll-padding-right: clamp(24px, 4vw, 48px);
+          cursor: grab;
+        }
+
+        .rooms-scroller.is-dragging {
+          cursor: grabbing;
+        }
+
+        .rooms-scroller::-webkit-scrollbar {
+          display: none;
+        }
+
         .rooms-panel {
           transition:
-            transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+            transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
             box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
-            border-color 300ms ease;
+            border-color 300ms ease,
+            opacity 260ms ease,
+            filter 260ms ease;
+          transform-origin: center center;
+          will-change: transform, opacity, filter;
         }
 
         .rooms-panel:hover {
-          transform: translateY(-4px);
-          box-shadow: rgba(0,0,0,0.05) 0px 8px 20px, rgba(0,0,0,0.08) 0px 28px 48px -18px;
+          box-shadow: rgba(0,0,0,0.06) 0px 10px 24px, rgba(244,124,89,0.2) 0px 20px 36px -22px;
         }
 
         .rooms-image {
@@ -96,25 +390,260 @@ function FeaturedRooms() {
         }
 
         .rooms-link {
-          transition: color 300ms ease;
+          position: relative;
+          overflow: hidden;
+          isolation: isolate;
+          border: 0.8px solid rgba(36,18,8,0.24);
+          border-radius: 999px;
+          padding: 10px 18px;
+          background-color: rgba(252,249,246,0.88);
+          transition: transform 560ms cubic-bezier(0.19, 1, 0.22, 1), color 420ms ease, border-color 420ms ease, background-color 420ms ease;
+          will-change: transform;
+        }
+
+        .rooms-link::before {
+          content: "";
+          position: absolute;
+          inset: -1px;
+          background: linear-gradient(112deg, rgba(244,124,89,0) 24%, rgba(244,124,89,0.2) 48%, rgba(244,124,89,0) 72%);
+          transform: translateX(-148%) skewX(-22deg);
+          transition: transform 820ms cubic-bezier(0.22, 1, 0.36, 1);
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .rooms-link > * {
+          position: relative;
+          z-index: 1;
+        }
+
+        .rooms-link .rooms-link-label {
+          transition: letter-spacing 420ms ease, transform 420ms cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .rooms-link .rooms-link-icon {
+          transition: transform 420ms cubic-bezier(0.19, 1, 0.22, 1);
+          transform-origin: center;
         }
 
         .rooms-link:hover {
-          color: ${T.primary};
+          color: ${T.neutral};
+          background-color: ${T.secondary};
+          border-color: ${T.secondary};
+          transform: translateY(-2px) scale(1.014);
+        }
+
+        .rooms-link:hover::before {
+          transform: translateX(148%) skewX(-22deg);
+        }
+
+        .rooms-link:hover .rooms-link-label {
+          letter-spacing: 1.45px;
+          transform: translateX(0.6px);
+        }
+
+        .rooms-link:hover .rooms-link-icon {
+          transform: translateX(1.5px) translateY(-0.5px) rotate(8deg);
+        }
+
+        .rooms-link:active {
+          transform: translateY(0) scale(0.99);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .rooms-link,
+          .rooms-link::before,
+          .rooms-link .rooms-link-label,
+          .rooms-link .rooms-link-icon {
+            transition: none;
+          }
+
+          .rooms-link:hover,
+          .rooms-link:active {
+            transform: none;
+          }
+        }
+
+        .rooms-nav-btn {
+          position: relative;
+          overflow: hidden;
+          isolation: isolate;
+          transition: transform 520ms cubic-bezier(0.19, 1, 0.22, 1), border-color 360ms ease, background-color 360ms ease, color 360ms ease;
+          will-change: transform;
+        }
+
+        .rooms-nav-btn::before {
+          content: "";
+          position: absolute;
+          inset: -1px;
+          background: linear-gradient(112deg, rgba(244,124,89,0) 24%, rgba(244,124,89,0.28) 48%, rgba(244,124,89,0) 72%);
+          transform: translateX(-148%) skewX(-22deg);
+          transition: transform 820ms cubic-bezier(0.22, 1, 0.36, 1);
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .rooms-nav-btn > * {
+          position: relative;
+          z-index: 1;
+        }
+
+        .rooms-nav-btn svg {
+          transition: transform 360ms cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .rooms-nav-btn:hover:not(:disabled) {
+          transform: translateY(-2px) scale(1.05);
+          border-color: rgba(244, 124, 89, 0.74);
+          background-color: rgba(244, 124, 89, 0.22);
+          color: rgba(252,249,246,0.98);
+        }
+
+        .rooms-nav-btn:hover:not(:disabled)::before {
+          transform: translateX(148%) skewX(-22deg);
+        }
+
+        .rooms-nav-btn:hover:not(:disabled) svg {
+          transform: translateX(var(--nav-shift, 0px));
+        }
+
+        .rooms-nav-btn:active:not(:disabled) {
+          transform: translateY(0) scale(0.98);
+        }
+
+        .rooms-nav-btn:disabled {
+          opacity: 0.38;
+          cursor: not-allowed;
+        }
+
+        .rooms-dot-btn {
+          position: relative;
+          transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), border-color 320ms ease, background-color 320ms ease;
+        }
+
+        .rooms-dot-btn::after {
+          content: "";
+          position: absolute;
+          inset: 1px;
+          border-radius: 999px;
+          background: linear-gradient(120deg, rgba(244,124,89,0.04) 0%, rgba(244,124,89,0.36) 52%, rgba(244,124,89,0.04) 100%);
+          opacity: 0;
+          transition: opacity 320ms ease;
+        }
+
+        .rooms-dot-btn:hover {
+          transform: translateY(-1px) scale(1.04);
+        }
+
+        .rooms-dot-btn:hover::after {
+          opacity: 1;
+        }
+
+        @media (min-width: 1280px) {
+          .rooms-link {
+            transition: transform 640ms cubic-bezier(0.19, 1, 0.22, 1), color 460ms ease, border-color 460ms ease, background-color 460ms ease;
+          }
+
+          .rooms-link:hover {
+            transform: translateY(-2.5px) scale(1.018);
+          }
+
+          .rooms-link::before {
+            transition-duration: 940ms;
+          }
+
+          .rooms-nav-btn:hover:not(:disabled) {
+            transform: translateY(-2.5px) scale(1.06);
+          }
+        }
+
+        @media (max-width: 767px) {
+          .rooms-link {
+            transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1), color 240ms ease, border-color 240ms ease, background-color 240ms ease;
+          }
+
+          .rooms-link:hover {
+            transform: translateY(-1px) scale(1.008);
+          }
+
+          .rooms-link::before {
+            transition-duration: 520ms;
+          }
+
+          .rooms-nav-btn {
+            transition: transform 230ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color 230ms ease, background-color 230ms ease, color 230ms ease;
+          }
+
+          .rooms-nav-btn:hover:not(:disabled) {
+            transform: translateY(-1px) scale(1.025);
+          }
+
+          .rooms-dot-btn:hover {
+            transform: translateY(-0.5px) scale(1.02);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .rooms-nav-btn,
+          .rooms-nav-btn::before,
+          .rooms-nav-btn svg,
+          .rooms-dot-btn,
+          .rooms-dot-btn::after {
+            transition: none;
+          }
+
+          .rooms-nav-btn:hover:not(:disabled),
+          .rooms-nav-btn:active:not(:disabled),
+          .rooms-dot-btn:hover {
+            transform: none;
+          }
         }
       `}</style>
 
       <section
+        ref={sectionRef}
+        id="featured-rooms"
         style={{
-          backgroundColor: T.neutral,
-          backgroundImage:
-            "radial-gradient(circle at 12% 18%, rgba(146,207,242,0.14) 0%, rgba(146,207,242,0) 44%)",
+          backgroundColor: "#1E120A",
           padding: "96px 0",
           position: "relative",
+          overflow: "hidden",
         }}
       >
+        <div className="pointer-events-none absolute inset-0">
+          <div
+            ref={auraRef}
+            className="absolute -left-[14%] top-[-22%] h-[620px] w-[620px] rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(244,124,89,0.22) 0%, rgba(244,124,89,0.06) 38%, rgba(244,124,89,0) 72%)",
+              filter: "blur(2px)",
+              transformOrigin: "center center",
+            }}
+          />
+          <div
+            className="absolute right-[-12%] top-[26%] h-[460px] w-[460px] rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(146,207,242,0.18) 0%, rgba(146,207,242,0.04) 44%, rgba(146,207,242,0) 74%)",
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(rgba(252,249,246,0.07) 0.45px, transparent 0.45px)",
+              backgroundSize: "5px 5px",
+              opacity: 0.22,
+            }}
+          />
+        </div>
+
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-12">
-          <header className="mb-16 grid grid-cols-1 gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+          <header
+            ref={headerRef}
+            className="mb-16 grid grid-cols-1 gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end"
+          >
             <div>
               <p
                 style={{
@@ -138,7 +667,7 @@ function FeaturedRooms() {
                   fontSize: "clamp(40px, 5vw, 66px)",
                   lineHeight: 1,
                   letterSpacing: "-0.025em",
-                  color: T.secondary,
+                  color: T.neutral,
                 }}
               >
                 Kenyamanan Klasik,
@@ -155,7 +684,7 @@ function FeaturedRooms() {
                 fontWeight: 400,
                 lineHeight: "20px",
                 letterSpacing: "-0.025em",
-                color: "rgba(36,18,8,0.72)",
+                color: "rgba(252,249,246,0.82)",
               }}
             >
               Pilih tempat istirahat yang paling sesuai dengan ritme perjalanan
@@ -165,60 +694,88 @@ function FeaturedRooms() {
             </p>
           </header>
 
-          <div className="flex flex-col gap-8">
-            {ROOM_DATA.map((room, index) => {
-              const reverse = index % 2 === 1;
-
-              return (
-                <article
-                  key={room.name}
-                  className="rooms-panel"
+          <div
+            ref={scrollerRef}
+            className="rooms-scroller -mx-6 flex snap-x snap-proximity gap-5 overflow-x-auto px-6 pb-4 sm:-mx-10 sm:px-10 lg:-mx-12 lg:gap-6 lg:px-12"
+            tabIndex={0}
+            role="region"
+            aria-label="Daftar kamar unggulan"
+            onKeyDown={onScrollerKeyDown}
+          >
+            {ROOM_DATA.map((room, index) => (
+              <article
+                key={room.name}
+                ref={(el) => {
+                  cardRefs.current[index] = el;
+                }}
+                data-active={activeCard === index}
+                className="rooms-panel min-w-[90vw] snap-center sm:min-w-[74vw] lg:min-w-[58vw] xl:min-w-[52vw]"
+                style={{
+                  padding: "1px",
+                  borderRadius: "2px",
+                  background:
+                    "linear-gradient(135deg, rgba(244,124,89,0.34) 0%, rgba(255,255,255,0.08) 50%, rgba(36,18,8,0.10) 100%)",
+                  boxShadow: T.shadow,
+                }}
+              >
+                <div
+                  className="flex h-full flex-col overflow-hidden"
                   style={{
-                    padding: "1px",
-                    borderRadius: "2px",
-                    background:
-                      "linear-gradient(135deg, rgba(244,124,89,0.34) 0%, rgba(255,255,255,0.08) 50%, rgba(36,18,8,0.10) 100%)",
-                    boxShadow: T.shadow,
+                    backgroundColor: T.neutral,
+                    borderRadius: "1px",
+                    minHeight: "clamp(620px, 76vh, 730px)",
                   }}
                 >
-                  <div
-                    className={`grid grid-cols-1 overflow-hidden lg:grid-cols-2 ${
-                      reverse ? "lg:[&>*:first-child]:order-2" : ""
-                    }`}
-                    style={{
-                      backgroundColor: T.neutral,
-                      borderRadius: "1px",
-                      minHeight: "min(78vh, 720px)",
-                    }}
-                  >
-                    <div className="relative min-h-[340px] lg:min-h-full">
-                      <img
-                        src={room.image}
-                        alt={room.name}
-                        className="rooms-image absolute inset-0 h-full w-full object-cover"
-                        loading="lazy"
-                      />
+                  <div className="relative min-h-[340px] overflow-hidden sm:min-h-[380px] lg:min-h-[420px]">
+                    <img
+                      src={room.image}
+                      alt={room.name}
+                      className="rooms-image absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                    />
 
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, rgba(36,18,8,0.08) 0%, rgba(36,18,8,0.18) 50%, rgba(36,18,8,0.62) 100%)",
+                      }}
+                    />
+
+                    <div className="absolute left-5 top-5 sm:left-6 sm:top-6">
                       <div
-                        className="absolute inset-0"
                         style={{
-                          background: reverse
-                            ? "linear-gradient(90deg, rgba(36,18,8,0.08) 0%, rgba(36,18,8,0.20) 62%, rgba(36,18,8,0.54) 100%)"
-                            : "linear-gradient(270deg, rgba(36,18,8,0.08) 0%, rgba(36,18,8,0.20) 62%, rgba(36,18,8,0.54) 100%)",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          border: "0.8px solid rgba(252,249,246,0.18)",
+                          backgroundColor: "rgba(36,18,8,0.34)",
+                          backdropFilter: "blur(14px)",
+                          color: T.neutral,
+                          padding: "8px 12px",
+                          borderRadius: "999px",
+                          fontFamily: T.body,
+                          fontSize: "11px",
+                          lineHeight: "16px",
+                          letterSpacing: "1.2px",
+                          textTransform: "uppercase",
                         }}
-                      />
+                      >
+                        <span>{room.id}</span>
+                        <span style={{ opacity: 0.8 }}>{room.eyebrow}</span>
+                      </div>
+                    </div>
 
-                      <div className="absolute left-5 top-5 sm:left-8 sm:top-8">
+                    {room.popular && (
+                      <div className="absolute bottom-5 left-5 sm:bottom-6 sm:left-6">
                         <div
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
-                            gap: "10px",
-                            border: "0.8px solid rgba(252,249,246,0.18)",
-                            backgroundColor: "rgba(36,18,8,0.34)",
-                            backdropFilter: "blur(14px)",
+                            gap: "8px",
+                            backgroundColor: T.primary,
                             color: T.neutral,
-                            padding: "8px 12px",
+                            padding: "10px 14px",
                             borderRadius: "999px",
                             fontFamily: T.body,
                             fontSize: "11px",
@@ -227,106 +784,108 @@ function FeaturedRooms() {
                             textTransform: "uppercase",
                           }}
                         >
-                          <span>{room.id}</span>
-                          <span style={{ opacity: 0.8 }}>{room.eyebrow}</span>
+                          Best Choice
                         </div>
                       </div>
+                    )}
+                  </div>
 
-                      {room.popular && (
-                        <div className="absolute bottom-5 left-5 sm:bottom-8 sm:left-8">
+                  <div className="flex flex-1 flex-col justify-between p-6 sm:p-8 lg:p-10">
+                    <div>
+                      <div
+                        style={{
+                          fontFamily: T.body,
+                          fontSize: "12px",
+                          lineHeight: "16px",
+                          letterSpacing: "1.2px",
+                          textTransform: "uppercase",
+                          color: T.primary,
+                          marginBottom: "16px",
+                        }}
+                      >
+                        {room.eyebrow}
+                      </div>
+
+                      <h3
+                        style={{
+                          fontFamily: T.display,
+                          fontWeight: 200,
+                          fontSize: "clamp(30px, 3.6vw, 48px)",
+                          lineHeight: 1,
+                          letterSpacing: "-0.025em",
+                          color: T.secondary,
+                          marginBottom: "20px",
+                        }}
+                      >
+                        {room.name}
+                      </h3>
+
+                      <p
+                        style={{
+                          fontFamily: T.body,
+                          fontSize: "14px",
+                          lineHeight: "20px",
+                          letterSpacing: "-0.025em",
+                          color: "rgba(36,18,8,0.72)",
+                          marginBottom: "28px",
+                          maxWidth: "46ch",
+                        }}
+                      >
+                        {room.desc}
+                      </p>
+
+                      <div
+                        style={{
+                          height: "0.8px",
+                          backgroundColor: "rgba(36,18,8,0.14)",
+                          marginBottom: "24px",
+                        }}
+                      />
+
+                      <div className="flex flex-wrap gap-x-6 gap-y-3">
+                        <Amenity icon={Maximize2} label={room.size} />
+                        <Amenity icon={BedDouble} label={room.bed} />
+                        <Amenity icon={Wifi} label="Wi-Fi" />
+                      </div>
+                    </div>
+
+                    <div className="mt-10">
+                      <div
+                        style={{
+                          height: "0.8px",
+                          backgroundColor: "rgba(36,18,8,0.14)",
+                          marginBottom: "20px",
+                        }}
+                      />
+
+                      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
                           <div
                             style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: "8px",
-                              backgroundColor: T.primary,
-                              color: T.neutral,
-                              padding: "10px 14px",
-                              borderRadius: "999px",
                               fontFamily: T.body,
-                              fontSize: "11px",
+                              fontSize: "12px",
                               lineHeight: "16px",
                               letterSpacing: "1.2px",
                               textTransform: "uppercase",
+                              color: "rgba(36,18,8,0.48)",
+                              marginBottom: "6px",
                             }}
                           >
-                            Best Choice
+                            Mulai dari
                           </div>
-                        </div>
-                      )}
-                    </div>
 
-                    <div className="flex min-h-full flex-col justify-between p-6 sm:p-8 lg:p-12">
-                      <div>
-                        <div
-                          style={{
-                            fontFamily: T.body,
-                            fontSize: "12px",
-                            lineHeight: "16px",
-                            letterSpacing: "1.2px",
-                            textTransform: "uppercase",
-                            color: T.primary,
-                            marginBottom: "16px",
-                          }}
-                        >
-                          {room.eyebrow}
-                        </div>
-
-                        <h3
-                          style={{
-                            fontFamily: T.display,
-                            fontWeight: 200,
-                            fontSize: "clamp(34px, 4vw, 54px)",
-                            lineHeight: 1,
-                            letterSpacing: "-0.025em",
-                            color: T.secondary,
-                            marginBottom: "20px",
-                          }}
-                        >
-                          {room.name}
-                        </h3>
-
-                        <p
-                          className="max-w-xl"
-                          style={{
-                            fontFamily: T.body,
-                            fontSize: "14px",
-                            lineHeight: "20px",
-                            letterSpacing: "-0.025em",
-                            color: "rgba(36,18,8,0.72)",
-                            marginBottom: "28px",
-                          }}
-                        >
-                          {room.desc}
-                        </p>
-
-                        <div
-                          style={{
-                            height: "0.8px",
-                            backgroundColor: "rgba(36,18,8,0.14)",
-                            marginBottom: "24px",
-                          }}
-                        />
-
-                        <div className="flex flex-wrap gap-x-6 gap-y-3">
-                          <Amenity icon={Maximize2} label={room.size} />
-                          <Amenity icon={BedDouble} label={room.bed} />
-                          <Amenity icon={Wifi} label="Wi-Fi" />
-                        </div>
-                      </div>
-
-                      <div className="mt-10">
-                        <div
-                          style={{
-                            height: "0.8px",
-                            backgroundColor: "rgba(36,18,8,0.14)",
-                            marginBottom: "20px",
-                          }}
-                        />
-
-                        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-                          <div>
-                            <div
+                          <div
+                            style={{
+                              fontFamily: T.display,
+                              fontSize: "clamp(28px, 3vw, 40px)",
+                              fontWeight: 200,
+                              lineHeight: 1,
+                              letterSpacing: "-0.025em",
+                              color: T.secondary,
+                            }}
+                          >
+                            {room.price}
+                            <span
                               style={{
                                 fontFamily: T.body,
                                 fontSize: "12px",
@@ -334,62 +893,156 @@ function FeaturedRooms() {
                                 letterSpacing: "1.2px",
                                 textTransform: "uppercase",
                                 color: "rgba(36,18,8,0.48)",
-                                marginBottom: "6px",
+                                marginLeft: "8px",
                               }}
                             >
-                              Mulai dari
-                            </div>
-
-                            <div
-                              style={{
-                                fontFamily: T.display,
-                                fontSize: "clamp(28px, 3vw, 40px)",
-                                fontWeight: 200,
-                                lineHeight: 1,
-                                letterSpacing: "-0.025em",
-                                color: T.secondary,
-                              }}
-                            >
-                              {room.price}
-                              <span
-                                style={{
-                                  fontFamily: T.body,
-                                  fontSize: "12px",
-                                  lineHeight: "16px",
-                                  letterSpacing: "1.2px",
-                                  textTransform: "uppercase",
-                                  color: "rgba(36,18,8,0.48)",
-                                  marginLeft: "8px",
-                                }}
-                              >
-                                / malam
-                              </span>
-                            </div>
+                              / malam
+                            </span>
                           </div>
-
-                          <button
-                            type="button"
-                            className="rooms-link inline-flex items-center gap-2"
-                            style={{
-                              alignSelf: "flex-start",
-                              fontFamily: T.body,
-                              fontSize: "12px",
-                              lineHeight: "16px",
-                              letterSpacing: "1.2px",
-                              textTransform: "uppercase",
-                              color: T.secondary,
-                            }}
-                          >
-                            Lihat Detail
-                            <ArrowUpRight size={14} strokeWidth={1.7} />
-                          </button>
                         </div>
+
+                        <button
+                          type="button"
+                          className="rooms-link inline-flex items-center gap-2"
+                          style={{
+                            alignSelf: "flex-start",
+                            fontFamily: T.body,
+                            fontSize: "12px",
+                            lineHeight: "16px",
+                            letterSpacing: "1.2px",
+                            textTransform: "uppercase",
+                            color: T.secondary,
+                          }}
+                        >
+                          <span className="rooms-link-label">Lihat Detail</span>
+                          <span className="rooms-link-icon">
+                            <ArrowUpRight size={14} strokeWidth={1.7} />
+                          </span>
+                        </button>
                       </div>
                     </div>
                   </div>
-                </article>
-              );
-            })}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-8 -mx-6 px-6 sm:-mx-10 sm:px-10 lg:-mx-12 lg:px-12">
+            <div
+              className="flex flex-wrap items-center justify-between gap-4"
+              style={{
+                border: "0.8px solid rgba(252,249,246,0.18)",
+                backgroundColor: "rgba(252,249,246,0.06)",
+                backdropFilter: "blur(10px)",
+                padding: "12px 14px",
+                borderRadius: "999px",
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="rooms-nav-btn inline-flex h-9 w-9 items-center justify-center"
+                  onClick={goPrev}
+                  disabled={activeCard === 0}
+                  aria-label="Lihat kamar sebelumnya"
+                  style={{
+                    "--nav-shift": "-1.4px",
+                    borderRadius: "999px",
+                    border: "0.8px solid rgba(252,249,246,0.24)",
+                    backgroundColor: "rgba(252,249,246,0.08)",
+                    color: T.neutral,
+                  }}
+                >
+                  <ArrowLeft size={15} strokeWidth={1.8} />
+                </button>
+
+                <button
+                  type="button"
+                  className="rooms-nav-btn inline-flex h-9 w-9 items-center justify-center"
+                  onClick={goNext}
+                  disabled={activeCard === ROOM_DATA.length - 1}
+                  aria-label="Lihat kamar berikutnya"
+                  style={{
+                    "--nav-shift": "1.4px",
+                    borderRadius: "999px",
+                    border: "0.8px solid rgba(252,249,246,0.24)",
+                    backgroundColor: "rgba(252,249,246,0.08)",
+                    color: T.neutral,
+                  }}
+                >
+                  <ArrowRight size={15} strokeWidth={1.8} />
+                </button>
+              </div>
+
+              <div className="hidden md:block">
+                <div
+                  style={{
+                    fontFamily: T.body,
+                    fontSize: "11px",
+                    lineHeight: "16px",
+                    letterSpacing: "1.2px",
+                    textTransform: "uppercase",
+                    color: "rgba(252,249,246,0.74)",
+                    textAlign: "center",
+                  }}
+                >
+                  {String(activeCard + 1).padStart(2, "0")} /{" "}
+                  {String(ROOM_DATA.length).padStart(2, "0")} •{" "}
+                  {activeRoom?.name}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {ROOM_DATA.map((room, index) => (
+                  <button
+                    type="button"
+                    key={`${room.id}-dot`}
+                    className="rooms-dot-btn"
+                    onClick={() => scrollToCard(index)}
+                    aria-label={`Lompat ke ${room.name}`}
+                    style={{
+                      width: "30px",
+                      height: "10px",
+                      borderRadius: "999px",
+                      border:
+                        activeCard === index
+                          ? "0.8px solid rgba(244,124,89,0.78)"
+                          : "0.8px solid rgba(252,249,246,0.2)",
+                      backgroundColor:
+                        activeCard === index
+                          ? "rgba(244,124,89,0.20)"
+                          : "rgba(252,249,246,0.10)",
+                      display: "flex",
+                      alignItems: "center",
+                      overflow: "hidden",
+                      boxShadow:
+                        activeCard === index
+                          ? "inset 0 0 0 1px rgba(255,255,255,0.08), 0 4px 14px rgba(244,124,89,0.24)"
+                          : "inset 0 0 0 1px rgba(255,255,255,0.04)",
+                      transition:
+                        "background-color 280ms ease, border-color 280ms ease, box-shadow 280ms ease",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: "10px",
+                        height: "10px",
+                        borderRadius: "999px",
+                        background:
+                          activeCard === index
+                            ? "linear-gradient(90deg, #f47c59 0%, #ffd7c8 100%)"
+                            : "rgba(252,249,246,0.55)",
+                        transformOrigin: "left center",
+                        transform:
+                          activeCard === index ? "scaleX(2.9)" : "scaleX(1)",
+                        transition:
+                          "transform 280ms cubic-bezier(0.22, 1, 0.36, 1), background 280ms ease",
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>

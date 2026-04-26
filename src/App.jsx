@@ -1,6 +1,7 @@
 import Hero from "./Hero.jsx";
 import About from "./About.jsx";
 import FeaturedRooms from "./FeaturedRooms.jsx";
+import Facilities from "./Facilities.jsx";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
       >
         <About />
         <FeaturedRooms />
+        <Facilities />
       </div>
     </div>
   );
