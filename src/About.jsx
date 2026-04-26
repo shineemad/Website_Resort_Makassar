@@ -1,100 +1,213 @@
-import React, { useEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-/* ─── Design tokens (mirrors DESIGN.md) ───────────────────────────── */
 const T = {
-  primary:     "#F47C59",
-  secondary:   "#241208",
-  neutral:     "#FCF9F6",
-  display:     '"Instrument Serif", serif',
-  body:        '"Inter", sans-serif',
-  border:      "0.8px solid rgba(36,18,8,0.18)",
+  primary: "#F47C59",
+  secondary: "#241208",
+  tertiary: "#92CFF2",
+  neutral: "#FCF9F6",
+  display: '"Instrument Serif", serif',
+  body: '"Inter", sans-serif',
+  border: "0.8px solid rgba(36,18,8,0.22)",
   shadow:
     "rgba(0,0,0,0.035) 0px 2.8px 2.2px, rgba(0,0,0,0.047) 0px 6.7px 5.3px, rgba(0,0,0,0.06) 0px 12.5px 10px, rgba(0,0,0,0.07) 0px 22.3px 17.9px, rgba(0,0,0,0.086) 0px 41.8px 33.4px, rgba(0,0,0,0.12) 0px 100px 80px",
 };
 
-/* ─── Stats data ──────────────────────────────────────────────────── */
-const STATS = [
-  { value: "1985", label: "Berdiri Sejak" },
-  { value: "156",  label: "Kamar & Suite" },
-  { value: "★★★★", label: "Bintang Empat" },
+const STORY_STEPS = [
+  {
+    year: "1985",
+    title: "Awal Sebuah Ikon",
+    headline: "Awal Sebuah Ikon",
+    highlight: "Pantai Losari Menjadi Panggung Pertama.",
+    copy: "Makassar Golden Hotel berdiri sebagai pelopor keramahan bintang 4 di jantung kota, tepat di tepian Pantai Losari.",
+    image:
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=960&q=80",
+  },
+  {
+    year: "1998",
+    title: "Ruang Untuk Momen Besar",
+    headline: "Ruang Untuk Momen Besar",
+    highlight: "Alamat Utama Perayaan Kota.",
+    copy: "Ribuan tamu dari berbagai kota merayakan momen penting di sini, menjadikannya alamat yang dipercaya lintas generasi.",
+    image:
+      "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=960&q=80",
+  },
+  {
+    year: "Hari Ini",
+    title: "Heritage Bertemu Modernitas",
+    headline: "Heritage Bertemu Modernitas",
+    highlight: "Ikonik, Relevan, Dan Selalu Hangat.",
+    copy: "Keanggunan klasik tetap terjaga, berpadu dengan fasilitas modern dan akses terbaik ke kuliner serta situs sejarah Makassar.",
+    image:
+      "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=960&q=80",
+  },
 ];
 
-/* ─── About component ─────────────────────────────────────────────── */
 const About = () => {
   const sectionRef = useRef(null);
+  const lineRef = useRef(null);
+  const visualRef = useRef(null);
+  const imageRef = useRef(null);
+  const yearRef = useRef(null);
+  const captionRef = useRef(null);
+  const headlineRef = useRef(null);
+  const cardRefs = useRef([]);
+  const activeIndexRef = useRef(0);
+  const [activeImage, setActiveImage] = useState(STORY_STEPS[0].image);
+  const [activeStory, setActiveStory] = useState(STORY_STEPS[0]);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  /* Scroll-reveal via IntersectionObserver — no deps, zero re-renders */
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
+  useLayoutEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
 
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        section
-          .querySelectorAll("[data-r]")
-          .forEach((el, i) =>
-            setTimeout(() => el.classList.add("ab-in"), i * 80)
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        lineRef.current,
+        { scaleX: 0, transformOrigin: "left" },
+        {
+          scaleX: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+          },
+        },
+      );
+
+      gsap.fromTo(
+        visualRef.current,
+        { y: 28, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 78%",
+          },
+        },
+      );
+
+      gsap.to(imageRef.current, {
+        scale: 1.08,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1.2,
+        },
+      });
+
+      const swapActiveStory = (index) => {
+        if (index === activeIndexRef.current) return;
+        activeIndexRef.current = index;
+
+        gsap.killTweensOf([
+          imageRef.current,
+          captionRef.current,
+          headlineRef.current,
+        ]);
+
+        gsap
+          .timeline()
+          .to(
+            [imageRef.current, captionRef.current, headlineRef.current],
+            {
+              opacity: 0,
+              y: 8,
+              duration: 0.28,
+              ease: "power2.inOut",
+            },
+            0,
+          )
+          .call(
+            () => {
+              setActiveImage(STORY_STEPS[index].image);
+              setActiveStory(STORY_STEPS[index]);
+              setActiveIndex(index);
+            },
+            null,
+            0.28,
+          )
+          .to(
+            [imageRef.current, captionRef.current, headlineRef.current],
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.42,
+              ease: "power2.out",
+            },
+            0.28,
           );
-        io.disconnect();
-      },
-      { threshold: 0.12 }
-    );
+      };
 
-    io.observe(section);
-    return () => io.disconnect();
+      cardRefs.current.forEach((card, index) => {
+        if (!card) return;
+        gsap.fromTo(
+          card,
+          { y: 24, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.6,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 74%",
+              end: "bottom 38%",
+              onEnter: () => swapActiveStory(index),
+              onEnterBack: () => swapActiveStory(index),
+            },
+          },
+        );
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
     <>
       <style>{`
-        /* Reveal classes — data-r drives staggered entrance */
-        [data-r] {
-          opacity: 0;
-          transform: translateY(22px);
-          transition: opacity 300ms cubic-bezier(0.4,0,0.2,1),
-                      transform 300ms cubic-bezier(0.4,0,0.2,1);
-          will-change: opacity, transform;
+        .story-card {
+          transition: background-color 300ms ease, border-color 300ms ease;
         }
-        [data-r].ab-in { opacity: 1; transform: translateY(0); }
 
-        /* Horizontal rule grow */
-        [data-r-line] {
-          transform-origin: left;
-          transform: scaleX(0);
-          transition: transform 500ms cubic-bezier(0.4,0,0.2,1);
+        .story-card:hover {
+          background-color: rgba(244, 124, 89, 0.06);
+          border-color: rgba(36, 18, 8, 0.35);
         }
-        [data-r-line].ab-in { transform: scaleX(1); }
 
-        /* Image clip reveal */
-        [data-r-img] {
-          clip-path: inset(100% 0 0 0);
-          transition: clip-path 500ms cubic-bezier(0.4,0,0.2,1) 80ms;
+        .about-link {
+          text-decoration: underline;
+          text-underline-offset: 6px;
+          text-decoration-thickness: 0.8px;
+          transition: color 300ms ease;
         }
-        [data-r-img].ab-in { clip-path: inset(0% 0 0 0); }
 
-        /* Ghost CTA hover */
-        .ab-cta {
-          transition: background-color 300ms ease, color 300ms ease;
-        }
-        .ab-cta:hover {
-          background-color: #241208 !important;
-          color: #FCF9F6 !important;
+        .about-link:hover {
+          color: ${T.primary};
         }
       `}</style>
 
       <section
         ref={sectionRef}
-        style={{ backgroundColor: T.neutral, padding: "96px 0" }}
+        style={{
+          backgroundColor: T.neutral,
+          backgroundImage:
+            "radial-gradient(circle at 12% 18%, rgba(146,207,242,0.14) 0%, rgba(146,207,242,0) 44%)",
+          padding: "96px 0",
+          position: "relative",
+        }}
       >
-        {/* ── Bounded container ── */}
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-12">
-
-          {/* Top rule */}
           <div
-            data-r
-            data-r-line
+            ref={lineRef}
             style={{
               height: "0.8px",
               backgroundColor: "rgba(36,18,8,0.14)",
@@ -102,269 +215,199 @@ const About = () => {
             }}
           />
 
-          {/* ── Two-column grid ── */}
-          <div className="flex flex-col gap-16 lg:flex-row lg:items-start lg:gap-20">
-
-            {/* ════ LEFT: Image column ════ */}
-            <div className="relative lg:w-[52%]">
-
-              {/* Ghost year — purely decorative */}
-              <span
-                aria-hidden="true"
-                data-r
-                style={{
-                  fontFamily:    T.display,
-                  fontWeight:    200,
-                  fontSize:      "clamp(88px, 15vw, 200px)",
-                  lineHeight:    1,
-                  letterSpacing: "-0.04em",
-                  color:         "rgba(36,18,8,0.05)",
-                  position:      "absolute",
-                  top:           "-0.12em",
-                  left:          "-0.06em",
-                  pointerEvents: "none",
-                  userSelect:    "none",
-                  zIndex:        0,
-                  whiteSpace:    "nowrap",
-                }}
-              >
-                1985
-              </span>
-
-              {/* Gradient border shell (DESIGN.md Elevation technique) */}
+          <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:gap-20">
+            <div className="lg:sticky lg:top-28 lg:h-fit" ref={visualRef}>
               <div
-                data-r
-                data-r-img
                 className="relative z-10"
                 style={{
-                  padding:      "1px",
+                  padding: "1px",
                   borderRadius: "2px",
                   background:
                     "linear-gradient(135deg, rgba(244,124,89,0.40) 0%, rgba(255,255,255,0.06) 50%, rgba(36,18,8,0.08) 100%)",
                   boxShadow: T.shadow,
                 }}
               >
-                <div style={{ borderRadius: "1px", overflow: "hidden" }}>
+                <div style={{ borderRadius: "0px", overflow: "hidden" }}>
                   <img
-                    src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=960&q=80"
-                    alt="Makassar Golden Hotel — Pantai Losari"
+                    ref={imageRef}
+                    src={activeImage}
+                    alt={activeStory.title}
                     style={{
-                      width:       "100%",
-                      aspectRatio: "4 / 3",
-                      objectFit:   "cover",
-                      display:     "block",
+                      width: "100%",
+                      aspectRatio: "4 / 5",
+                      objectFit: "cover",
+                      display: "block",
                     }}
                     loading="lazy"
                   />
                 </div>
               </div>
 
-              {/* Floating badge — bottom right */}
               <div
-                data-r
+                ref={captionRef}
                 style={{
-                  position:        "absolute",
-                  bottom:          "-20px",
-                  right:           "20px",
-                  backgroundColor: T.primary,
-                  color:           T.neutral,
-                  padding:         "14px 18px",
-                  zIndex:          20,
-                  fontFamily:      T.body,
-                  fontSize:        "10px",
-                  letterSpacing:   "1.2px",
-                  textTransform:   "uppercase",
-                  lineHeight:      1.5,
-                  borderRadius:    "0px",
+                  marginTop: "20px",
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: "12px",
+                  fontFamily: T.body,
+                  fontSize: "12px",
+                  letterSpacing: "1.2px",
+                  textTransform: "uppercase",
+                  color: "rgba(36,18,8,0.52)",
                 }}
               >
-                <div style={{ fontSize: "22px", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1 }}>
-                  #1
+                <div
+                  ref={yearRef}
+                  style={{
+                    fontFamily: T.display,
+                    fontSize: "44px",
+                    fontWeight: 200,
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1,
+                    color: T.primary,
+                  }}
+                >
+                  {activeStory.year}
                 </div>
-                <div style={{ marginTop: "2px", opacity: 0.9 }}>
-                  Pantai Losari
-                </div>
+                <div>{activeStory.title}</div>
               </div>
             </div>
 
-            {/* ════ RIGHT: Text column ════ */}
-            <div
-              className="flex flex-col lg:w-[48%]"
-              style={{ paddingTop: "12px" }}
-            >
-
-              {/* Eyebrow label */}
+            <div className="flex flex-col" style={{ paddingTop: "8px" }}>
               <p
-                data-r
                 style={{
-                  fontFamily:    T.body,
-                  fontSize:      "12px",
-                  fontWeight:    400,
-                  lineHeight:    "16px",
+                  fontFamily: T.body,
+                  fontSize: "12px",
+                  fontWeight: 400,
+                  lineHeight: "16px",
                   letterSpacing: "1.2px",
                   textTransform: "uppercase",
-                  color:         T.primary,
-                  marginBottom:  "16px",
+                  color: T.primary,
+                  marginBottom: "16px",
                 }}
               >
                 Warisan Kemewahan Makassar
               </p>
 
-              {/* H2 — Instrument Serif weight 200, italic mix */}
               <h2
-                data-r
+                ref={headlineRef}
                 style={{
-                  fontFamily:    T.display,
-                  fontWeight:    200,
-                  fontSize:      "clamp(36px, 4vw, 54px)",
-                  lineHeight:    1.0,
+                  fontFamily: T.display,
+                  fontWeight: 200,
+                  fontSize: "clamp(38px, 4.5vw, 62px)",
+                  lineHeight: 1,
                   letterSpacing: "-0.025em",
-                  color:         T.secondary,
-                  marginBottom:  "32px",
+                  color: T.secondary,
+                  marginBottom: "32px",
                 }}
               >
-                Lebih Dari Sekadar<br />
-                Tempat Singgah,{" "}
-                <em>Sebuah&nbsp;Ikon Sejarah.</em>
+                {activeStory.headline}
+                <br />
+                <em>{activeStory.highlight}</em>
               </h2>
 
-              {/* Section divider */}
               <div
-                data-r
-                data-r-line
                 style={{
-                  height:          "0.8px",
+                  height: "0.8px",
                   backgroundColor: "rgba(36,18,8,0.16)",
-                  marginBottom:    "28px",
+                  marginBottom: "28px",
                 }}
               />
-
-              {/* Body paragraph 1 */}
-              <p
-                data-r
-                style={{
-                  fontFamily:    T.body,
-                  fontSize:      "14px",
-                  fontWeight:    400,
-                  lineHeight:    "20px",
-                  letterSpacing: "-0.025em",
-                  color:         "rgba(36,18,8,0.68)",
-                  marginBottom:  "16px",
-                }}
-              >
-                Berdiri megah sejak 1985, Makassar Golden Hotel adalah pelopor
-                keramahan bintang 4 di jantung kota. Kami telah menjadi saksi
-                bisu ribuan senja dan momen berharga. Di sini, sentuhan
-                keanggunan klasik berpadu sempurna dengan kenyamanan fasilitas
-                modern, menyambut Anda seperti kembali ke rumah.
-              </p>
-
-              {/* Body paragraph 2 */}
-              <p
-                data-r
-                style={{
-                  fontFamily:    T.body,
-                  fontSize:      "14px",
-                  fontWeight:    400,
-                  lineHeight:    "20px",
-                  letterSpacing: "-0.025em",
-                  color:         "rgba(36,18,8,0.68)",
-                  marginBottom:  "40px",
-                }}
-              >
-                Langkah kaki Anda langsung menyentuh ikon Pantai Losari.
-                Dengan pemandangan laut lepas yang memukau dan akses mudah ke
-                pusat kuliner serta situs bersejarah, kami menawarkan
-                pengalaman menginap dengan lokasi yang tak tertandingi di
-                Makassar.
-              </p>
-
-              {/* ── Stats grid ── */}
               <div
-                data-r
                 style={{
-                  display:             "grid",
-                  gridTemplateColumns: "repeat(3, 1fr)",
-                  borderTop:           T.border,
-                  borderLeft:          T.border,
-                  marginBottom:        "48px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "14px",
+                  marginBottom: "48px",
                 }}
               >
-                {STATS.map(({ value, label }) => (
+                {STORY_STEPS.map((step, index) => (
                   <div
-                    key={label}
+                    key={step.year}
+                    ref={(el) => {
+                      cardRefs.current[index] = el;
+                    }}
+                    className="story-card"
                     style={{
-                      borderRight:  T.border,
-                      borderBottom: T.border,
-                      padding:      "16px 12px",
+                      border: T.border,
+                      borderRadius: "2px",
+                      padding: "16px",
+                      backgroundColor:
+                        activeIndex === index
+                          ? "rgba(244,124,89,0.08)"
+                          : "rgba(252,249,246,0.7)",
                     }}
                   >
                     <div
                       style={{
-                        fontFamily:    T.display,
-                        fontWeight:    200,
-                        fontSize:      "26px",
-                        lineHeight:    1,
+                        fontFamily: T.display,
+                        fontWeight: 200,
+                        fontSize: "30px",
+                        lineHeight: 1,
                         letterSpacing: "-0.025em",
-                        color:         T.secondary,
-                        marginBottom:  "4px",
+                        color: T.secondary,
+                        marginBottom: "4px",
                       }}
                     >
-                      {value}
+                      {step.year}
                     </div>
                     <div
                       style={{
-                        fontFamily:    T.body,
-                        fontSize:      "10px",
-                        fontWeight:    400,
-                        lineHeight:    "16px",
+                        fontFamily: T.body,
+                        fontSize: "12px",
+                        fontWeight: 400,
+                        lineHeight: "16px",
                         letterSpacing: "1.2px",
                         textTransform: "uppercase",
-                        color:         "rgba(36,18,8,0.42)",
+                        color: T.primary,
+                        marginBottom: "8px",
                       }}
                     >
-                      {label}
+                      {step.title}
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: T.body,
+                        fontSize: "14px",
+                        fontWeight: 400,
+                        lineHeight: "20px",
+                        letterSpacing: "-0.025em",
+                        color: "rgba(36,18,8,0.68)",
+                      }}
+                    >
+                      {step.copy}
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Ghost / outline CTA */}
-              <div data-r>
-                <button
-                  type="button"
-                  className="ab-cta inline-flex items-center gap-3"
+              <div>
+                <a
+                  href="#"
+                  className="about-link inline-flex items-center gap-2"
                   style={{
-                    fontFamily:      T.body,
-                    fontSize:        "12px",
-                    fontWeight:      400,
-                    lineHeight:      "16px",
-                    letterSpacing:   "1.2px",
-                    textTransform:   "uppercase",
-                    color:           T.secondary,
-                    backgroundColor: "transparent",
-                    border:          "0.8px solid #241208",
-                    borderRadius:    "0px",
-                    padding:         "12px 20px",
-                    cursor:          "pointer",
+                    fontFamily: T.body,
+                    fontSize: "12px",
+                    fontWeight: 400,
+                    lineHeight: "16px",
+                    letterSpacing: "1.2px",
+                    textTransform: "uppercase",
+                    color: T.secondary,
                   }}
                 >
                   Jelajahi Fasilitas
                   <ArrowUpRight style={{ width: "14px", height: "14px" }} />
-                </button>
+                </a>
               </div>
-
             </div>
           </div>
 
-          {/* Bottom rule */}
           <div
-            data-r
-            data-r-line
             style={{
-              height:          "0.8px",
+              height: "0.8px",
               backgroundColor: "rgba(36,18,8,0.14)",
-              marginTop:       "80px",
+              marginTop: "80px",
             }}
           />
         </div>
