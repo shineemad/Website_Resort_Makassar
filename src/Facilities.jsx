@@ -220,7 +220,7 @@ function Facilities() {
         }
 
         .fac-row:not(:last-child) {
-          margin-bottom: clamp(22px, 6vh, 84px);
+          margin-bottom: clamp(120px, 20vh, 240px);
         }
 
         .fac-reveal {
@@ -489,14 +489,11 @@ function Facilities() {
             const Icon = item.Icon;
             const isImageLeft = index % 2 === 0;
             const rowClass = isImageLeft ? "asym-left" : "asym-right";
-            const columnsClass =
-              isImageLeft
-                ? "lg:grid-cols-[0.84fr_1.16fr]"
-                : "lg:grid-cols-[1.16fr_0.84fr]";
+            const columnsClass = isImageLeft
+              ? "lg:grid-cols-[0.84fr_1.16fr]"
+              : "lg:grid-cols-[1.16fr_0.84fr]";
             const mediaOrderClass = isImageLeft ? "lg:order-1" : "lg:order-2";
-            const contentOrderClass = isImageLeft
-              ? "lg:order-2"
-              : "lg:order-1";
+            const contentOrderClass = isImageLeft ? "lg:order-2" : "lg:order-1";
             const contentAlignClass = isImageLeft
               ? "lg:items-start lg:text-left"
               : "lg:items-end lg:text-right";
