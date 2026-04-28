@@ -115,9 +115,34 @@ function FeaturedRooms() {
     pointerId: null,
     startX: 0,
     startScrollLeft: 0,
+    hasMoved: false,
   });
   const [activeCard, setActiveCard] = useState(0);
   const activeRoom = ROOM_DATA[activeCard];
+
+  const getClosestCardIndex = () => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return 0;
+
+    const scrollerRect = scroller.getBoundingClientRect();
+    const scrollerCenter = scrollerRect.left + scrollerRect.width / 2;
+    let closestIndex = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+
+    cardRefs.current.forEach((card, index) => {
+      if (!card) return;
+      const rect = card.getBoundingClientRect();
+      const cardCenter = rect.left + rect.width / 2;
+      const distance = Math.abs(scrollerCenter - cardCenter);
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    return closestIndex;
+  };
 
   const scrollToCard = (index) => {
     const scroller = scrollerRef.current;
@@ -293,6 +318,32 @@ function FeaturedRooms() {
     const scroller = scrollerRef.current;
     if (!scroller) return undefined;
 
+    let snapTimer = 0;
+
+    const scheduleSnapToClosestCard = () => {
+      if (snapTimer) window.clearTimeout(snapTimer);
+
+      snapTimer = window.setTimeout(() => {
+        if (dragRef.current.isPointerDown) return;
+        const closestIndex = getClosestCardIndex();
+        scrollToCard(closestIndex);
+      }, 140);
+    };
+
+    scroller.addEventListener("scroll", scheduleSnapToClosestCard, {
+      passive: true,
+    });
+
+    return () => {
+      if (snapTimer) window.clearTimeout(snapTimer);
+      scroller.removeEventListener("scroll", scheduleSnapToClosestCard);
+    };
+  }, []);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return undefined;
+
     const onPointerDown = (event) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
 
@@ -300,6 +351,7 @@ function FeaturedRooms() {
       dragRef.current.pointerId = event.pointerId;
       dragRef.current.startX = event.clientX;
       dragRef.current.startScrollLeft = scroller.scrollLeft;
+      dragRef.current.hasMoved = false;
 
       scroller.classList.add("is-dragging");
       if (typeof scroller.setPointerCapture === "function") {
@@ -311,13 +363,33 @@ function FeaturedRooms() {
       if (!dragRef.current.isPointerDown) return;
 
       const walk = event.clientX - dragRef.current.startX;
+      if (Math.abs(walk) > 2) {
+        dragRef.current.hasMoved = true;
+      }
       scroller.scrollLeft = dragRef.current.startScrollLeft - walk;
     };
 
     const stopPointerDrag = () => {
+      const { pointerId, hasMoved } = dragRef.current;
       dragRef.current.isPointerDown = false;
       dragRef.current.pointerId = null;
       scroller.classList.remove("is-dragging");
+
+      if (
+        pointerId !== null &&
+        typeof scroller.releasePointerCapture === "function"
+      ) {
+        try {
+          scroller.releasePointerCapture(pointerId);
+        } catch {
+          // Ignore when capture has already been released by the browser.
+        }
+      }
+
+      if (hasMoved) {
+        const closestIndex = getClosestCardIndex();
+        scrollToCard(closestIndex);
+      }
     };
 
     scroller.addEventListener("pointerdown", onPointerDown, {
@@ -356,6 +428,8 @@ function FeaturedRooms() {
           scroll-padding-left: clamp(24px, 4vw, 48px);
           scroll-padding-right: clamp(24px, 4vw, 48px);
           cursor: grab;
+          touch-action: pan-y;
+          overscroll-behavior-x: contain;
         }
 
         .rooms-scroller.is-dragging {
@@ -375,6 +449,7 @@ function FeaturedRooms() {
             filter 260ms ease;
           transform-origin: center center;
           will-change: transform, opacity, filter;
+          scroll-snap-stop: always;
         }
 
         .rooms-panel:hover {
@@ -696,7 +771,7 @@ function FeaturedRooms() {
 
           <div
             ref={scrollerRef}
-            className="rooms-scroller -mx-6 flex snap-x snap-proximity gap-5 overflow-x-auto px-6 pb-4 sm:-mx-10 sm:px-10 lg:-mx-12 lg:gap-6 lg:px-12"
+            className="rooms-scroller -mx-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-4 sm:-mx-10 sm:px-10 lg:-mx-12 lg:gap-6 lg:px-12"
             tabIndex={0}
             role="region"
             aria-label="Daftar kamar unggulan"
