@@ -10,6 +10,12 @@ import {
 const SECTION_TWO_SHADOW =
   "rgba(0,0,0,0.035) 0px 2.8px 2.2px, rgba(0,0,0,0.047) 0px 6.7px 5.3px, rgba(0,0,0,0.06) 0px 12.5px 10px, rgba(0,0,0,0.07) 0px 22.3px 17.9px, rgba(0,0,0,0.086) 0px 41.8px 33.4px, rgba(0,0,0,0.12) 0px 100px 80px";
 
+const FACILITY_PILL_SHADOW =
+  "rgba(36,18,8,0.08) 0px 6px 12px, rgba(36,18,8,0.12) 0px 18px 26px -18px, rgba(244,124,89,0.24) 0px 12px 24px -18px";
+
+const FACILITY_PILL_SHADOW_HOVER =
+  "rgba(36,18,8,0.1) 0px 10px 18px, rgba(36,18,8,0.16) 0px 24px 36px -20px, rgba(244,124,89,0.32) 0px 18px 30px -18px";
+
 const facilities = [
   {
     label: "Our Pool Experience",
@@ -17,7 +23,7 @@ const facilities = [
     desc: "Bersantai sambil menikmati sunset ikonik Pantai Losari dengan suasana tenang dan pemandangan laut terbuka yang menjadi ciri khas MGH.",
     cta: "Explore pool experience",
     image:
-      "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?auto=format&fit=crop&w=1000&q=75",
     Icon: Waves,
   },
   {
@@ -26,7 +32,7 @@ const facilities = [
     desc: "Kopi, camilan lokal, dan semilir angin laut yang menenangkan, menghadirkan titik santai terbaik untuk menikmati sore khas Makassar.",
     cta: "Explore terrace dining",
     image:
-      "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1000&q=75",
     Icon: Coffee,
   },
   {
@@ -35,7 +41,7 @@ const facilities = [
     desc: "Fasilitas elegan untuk kebutuhan bisnis maupun perayaan spesial Anda, dengan tata ruang fleksibel dan pelayanan event yang terkurasi.",
     cta: "Explore event spaces",
     image:
-      "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1000&q=75",
     Icon: Presentation,
   },
   {
@@ -44,7 +50,7 @@ const facilities = [
     desc: "Pulihkan energi Anda dengan perawatan pijat tradisional dan ritual relaksasi yang dirancang untuk menutup hari dengan nyaman.",
     cta: "Explore wellness ritual",
     image:
-      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1400&q=80",
+      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1000&q=75",
     Icon: Sparkles,
   },
 ];
@@ -87,6 +93,8 @@ function Facilities() {
     return () => observer.disconnect();
   }, []);
 
+  const sectionRef = useRef(null);
+
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -95,6 +103,7 @@ function Facilities() {
     if (prefersReducedMotion) return;
 
     let rafId = null;
+    let isVisible = false;
 
     const updateParallax = () => {
       const viewportHeight = window.innerHeight || 1;
@@ -116,7 +125,7 @@ function Facilities() {
     };
 
     const requestParallaxUpdate = () => {
-      if (rafId !== null) return;
+      if (!isVisible || rafId !== null) return;
       rafId = window.requestAnimationFrame(updateParallax);
     };
 
@@ -124,16 +133,27 @@ function Facilities() {
     window.addEventListener("scroll", requestParallaxUpdate, { passive: true });
     window.addEventListener("resize", requestParallaxUpdate);
 
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) requestParallaxUpdate();
+      },
+      { rootMargin: "200px 0px 200px 0px" },
+    );
+    if (sectionRef.current) visibilityObserver.observe(sectionRef.current);
+
     return () => {
       window.removeEventListener("scroll", requestParallaxUpdate);
       window.removeEventListener("resize", requestParallaxUpdate);
       if (rafId !== null) window.cancelAnimationFrame(rafId);
+      visibilityObserver.disconnect();
     };
   }, []);
 
   return (
     <section
       id="facilities"
+      ref={sectionRef}
       style={{
         backgroundColor: "#FCF9F6",
         paddingBlock: "clamp(72px, 11vh, 132px)",
@@ -302,8 +322,8 @@ function Facilities() {
         }
 
         .fac-pill {
-          box-shadow: ${SECTION_TWO_SHADOW};
-          transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, border-color 300ms ease, background-color 300ms ease;
+          box-shadow: ${FACILITY_PILL_SHADOW};
+          transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1), color 300ms ease, border-color 300ms ease, background-color 300ms ease;
           will-change: transform;
         }
 
@@ -325,7 +345,8 @@ function Facilities() {
           background-color: #241208;
           color: #FCF9F6;
           border-color: #241208;
-          transform: translateY(-1px);
+          box-shadow: ${FACILITY_PILL_SHADOW_HOVER};
+          transform: translateY(-2px);
         }
 
         .fac-pill:hover .pill-label {
@@ -343,6 +364,7 @@ function Facilities() {
         }
 
         .fac-pill:active {
+          box-shadow: ${FACILITY_PILL_SHADOW};
           transform: translateY(0);
         }
 
@@ -495,6 +517,7 @@ function Facilities() {
                       src={item.image}
                       alt={item.title}
                       loading="lazy"
+                      decoding="async"
                       className="fac-image absolute inset-0 h-full w-full object-cover"
                     />
                     <div
@@ -562,7 +585,6 @@ function Facilities() {
                           color: "#FCF9F6",
                           borderRadius: "0px",
                           padding: "12px",
-                          boxShadow: SECTION_TWO_SHADOW,
                           fontFamily: '"Inter", sans-serif',
                           fontSize: "12px",
                           lineHeight: "16px",

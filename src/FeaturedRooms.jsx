@@ -31,7 +31,7 @@ const ROOM_DATA = [
     bed: "Twin/King Bed",
     price: "Rp 650.000",
     image:
-      "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1200&q=75",
     eyebrow: "City-Facing Calm",
     popular: false,
   },
@@ -43,7 +43,7 @@ const ROOM_DATA = [
     bed: "King Bed",
     price: "Rp 850.000",
     image:
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=75",
     eyebrow: "Most Desired",
     popular: true,
   },
@@ -55,7 +55,7 @@ const ROOM_DATA = [
     bed: "King Bed",
     price: "Rp 1.500.000",
     image:
-      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=75",
     eyebrow: "Signature Stay",
     popular: false,
   },
@@ -67,7 +67,7 @@ const ROOM_DATA = [
     bed: "King Bed",
     price: "Rp 1.050.000",
     image:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=75",
     eyebrow: "Ocean Corner",
     popular: false,
   },
@@ -79,7 +79,7 @@ const ROOM_DATA = [
     bed: "King + Twin",
     price: "Rp 1.850.000",
     image:
-      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=75",
     eyebrow: "Family Prestige",
     popular: false,
   },
@@ -465,7 +465,7 @@ function FeaturedRooms() {
             opacity 380ms ease,
             filter 380ms ease;
           transform-origin: center center;
-          will-change: transform, opacity, filter;
+          will-change: transform;
           scroll-snap-stop: always;
         }
 
@@ -792,6 +792,7 @@ function FeaturedRooms() {
                       alt={room.name}
                       className="rooms-image absolute inset-0 h-full w-full object-cover"
                       loading="lazy"
+                      decoding="async"
                     />
 
                     <div

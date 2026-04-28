@@ -1,5 +1,4 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -23,7 +22,7 @@ const STORY_STEPS = [
     highlight: "Pantai Losari Menjadi Panggung Pertama.",
     copy: "Makassar Golden Hotel berdiri sebagai pelopor keramahan bintang 4 di jantung kota, tepat di tepian Pantai Losari.",
     image:
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=960&q=80",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=75",
   },
   {
     year: "1998",
@@ -32,7 +31,7 @@ const STORY_STEPS = [
     highlight: "Alamat Utama Perayaan Kota.",
     copy: "Ribuan tamu dari berbagai kota merayakan momen penting di sini, menjadikannya alamat yang dipercaya lintas generasi.",
     image:
-      "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=960&q=80",
+      "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=75",
   },
   {
     year: "Hari Ini",
@@ -41,7 +40,7 @@ const STORY_STEPS = [
     highlight: "Relevan Dan Hangat.",
     copy: "Keanggunan klasik tetap terjaga, berpadu dengan fasilitas modern dan akses terbaik ke kuliner serta situs sejarah Makassar.",
     image:
-      "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=960&q=80",
+      "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=800&q=75",
   },
 ];
 
@@ -387,57 +386,6 @@ const About = () => {
           }
         }
 
-        .about-link {
-          position: relative;
-          gap: 12px;
-          border: 0;
-          border-radius: 0px;
-          padding: 12px;
-          background-color: ${T.primary};
-          box-shadow: ${T.shadow};
-          text-decoration: none;
-          transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, background-color 300ms ease;
-          will-change: transform;
-        }
-
-        .about-link > * {
-          position: relative;
-          z-index: 1;
-        }
-
-        .about-link .about-link-label {
-          transition: letter-spacing 420ms ease, transform 420ms cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        .about-link .about-link-icon {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 14px;
-          height: 14px;
-          transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
-          transform-origin: center;
-        }
-
-        .about-link:hover {
-          color: ${T.neutral};
-          background-color: ${T.secondary};
-          transform: translateY(-1px);
-        }
-
-        .about-link:hover .about-link-label {
-          letter-spacing: 1.2px;
-          transform: none;
-        }
-
-        .about-link:hover .about-link-icon {
-          transform: translateX(1px);
-        }
-
-        .about-link:active {
-          transform: translateY(0);
-        }
-
         @media (min-width: 1280px) {
           .about-desktop-grid {
             grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
@@ -458,18 +406,6 @@ const About = () => {
             font-size: clamp(34px, 3.55vw, 54px);
             line-height: 0.96;
           }
-
-          .about-cta-wrap {
-            padding-top: 4px;
-          }
-
-          .about-link {
-            transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, background-color 300ms ease;
-          }
-
-          .about-link:hover {
-            transform: translateY(-1px);
-          }
         }
 
         @media (max-width: 767px) {
@@ -484,27 +420,8 @@ const About = () => {
             mask-image: none;
           }
 
-          .about-cta-wrap {
-            padding-top: 8px;
-          }
-
           .about-copy-column {
             row-gap: 0;
-          }
-
-          .about-link {
-            gap: 10px;
-            padding: 12px;
-            transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, background-color 300ms ease;
-          }
-
-          .about-link:hover {
-            transform: translateY(-1px);
-          }
-
-          .about-link:hover .about-link-label {
-            letter-spacing: 1.2px;
-            transform: none;
           }
         }
 
@@ -516,17 +433,6 @@ const About = () => {
           }
 
           .story-card:hover {
-            transform: none;
-          }
-
-          .about-link,
-          .about-link .about-link-label,
-          .about-link .about-link-icon {
-            transition: none;
-          }
-
-          .about-link:hover,
-          .about-link:active {
             transform: none;
           }
         }
@@ -578,6 +484,7 @@ const About = () => {
                         display: "block",
                       }}
                       loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 </div>
@@ -730,27 +637,6 @@ const About = () => {
                       </div>
                     ))}
                   </div>
-                </div>
-
-                <div className="about-cta-wrap">
-                  <a
-                    href="#facilities"
-                    className="about-link inline-flex items-center gap-2"
-                    style={{
-                      fontFamily: T.body,
-                      fontSize: "12px",
-                      fontWeight: 400,
-                      lineHeight: "16px",
-                      letterSpacing: "1.2px",
-                      textTransform: "uppercase",
-                      color: T.neutral,
-                    }}
-                  >
-                    <span className="about-link-label">Jelajahi Fasilitas</span>
-                    <span className="about-link-icon">
-                      <ArrowUpRight style={{ width: "14px", height: "14px" }} />
-                    </span>
-                  </a>
                 </div>
               </div>
             </div>

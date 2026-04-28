@@ -71,7 +71,7 @@ const Hero = () => {
             muted
             loop
             playsInline
-            poster="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=60"
+            poster="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1280&q=50"
           >
             <source
               src="https://videos.pexels.com/video-files/1739011/1739011-hd_1920_1080_30fps.mp4"
