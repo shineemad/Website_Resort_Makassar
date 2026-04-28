@@ -3,6 +3,7 @@ import About from "./About.jsx";
 import FeaturedRooms from "./FeaturedRooms.jsx";
 import Facilities from "./Facilities.jsx";
 import Location from "./Location.jsx";
+import Testimonials from "./Testimonials.jsx";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         <FeaturedRooms />
         <Facilities />
         <Location />
+        <Testimonials />
       </div>
     </div>
   );
