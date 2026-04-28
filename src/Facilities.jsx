@@ -298,40 +298,21 @@ function Facilities() {
         }
 
         .fac-pill {
-          position: relative;
-          overflow: hidden;
-          isolation: isolate;
-          transition: transform 560ms cubic-bezier(0.19, 1, 0.22, 1), color 420ms ease, border-color 420ms ease, background-color 420ms ease;
+          transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, border-color 300ms ease, background-color 300ms ease;
           will-change: transform;
         }
 
-        .fac-pill::before {
-          content: "";
-          position: absolute;
-          inset: -1px;
-          background: linear-gradient(112deg, rgba(252,249,246,0) 24%, rgba(252,249,246,0.28) 48%, rgba(252,249,246,0) 72%);
-          transform: translateX(-148%) skewX(-22deg);
-          transition: transform 820ms cubic-bezier(0.22, 1, 0.36, 1);
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        .fac-pill > * {
-          position: relative;
-          z-index: 1;
-        }
-
         .fac-pill .pill-label {
-          transition: letter-spacing 420ms ease, transform 420ms cubic-bezier(0.19, 1, 0.22, 1);
+          transition: letter-spacing 300ms ease, transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .fac-pill .pill-ico-left {
-          transition: transform 420ms cubic-bezier(0.19, 1, 0.22, 1), opacity 360ms ease;
+          transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms ease;
           transform-origin: center;
         }
 
         .fac-pill .pill-ico-right {
-          transition: transform 420ms cubic-bezier(0.19, 1, 0.22, 1);
+          transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
           transform-origin: center;
         }
 
@@ -339,67 +320,54 @@ function Facilities() {
           background-color: #241208;
           color: #FCF9F6;
           border-color: #241208;
-          transform: translateY(-2px) scale(1.016);
-        }
-
-        .fac-pill:hover::before {
-          transform: translateX(148%) skewX(-22deg);
+          transform: translateY(-1px);
         }
 
         .fac-pill:hover .pill-label {
-          letter-spacing: 1.45px;
-          transform: translateX(0.6px);
+          letter-spacing: 1.2px;
+          transform: none;
         }
 
         .fac-pill:hover .pill-ico-left {
-          transform: rotate(-12deg) translateY(-0.5px);
+          transform: rotate(-6deg);
           opacity: 0.9;
         }
 
         .fac-pill:hover .pill-ico-right {
-          transform: translateX(1.5px) translateY(-0.5px) rotate(8deg);
+          transform: translateX(1px);
         }
 
         .fac-pill:active {
-          transform: translateY(0) scale(0.99);
+          transform: translateY(0);
         }
 
         @media (min-width: 1280px) {
           .fac-pill {
-            transition: transform 640ms cubic-bezier(0.19, 1, 0.22, 1), color 460ms ease, border-color 460ms ease, background-color 460ms ease;
+            transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, border-color 300ms ease, background-color 300ms ease;
           }
 
           .fac-pill:hover {
-            transform: translateY(-2.5px) scale(1.018);
-          }
-
-          .fac-pill::before {
-            transition-duration: 940ms;
+            transform: translateY(-1px);
           }
         }
 
         @media (max-width: 767px) {
           .fac-pill {
-            transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1), color 240ms ease, border-color 240ms ease, background-color 240ms ease;
+            transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, border-color 300ms ease, background-color 300ms ease;
           }
 
           .fac-pill:hover {
-            transform: translateY(-1px) scale(1.008);
-          }
-
-          .fac-pill::before {
-            transition-duration: 520ms;
+            transform: translateY(-1px);
           }
 
           .fac-pill:hover .pill-label {
-            letter-spacing: 1.3px;
+            letter-spacing: 1.2px;
             transform: none;
           }
         }
 
         @media (prefers-reduced-motion: reduce) {
           .fac-pill,
-          .fac-pill::before,
           .fac-pill .pill-label,
           .fac-pill .pill-ico-left,
           .fac-pill .pill-ico-right {
@@ -587,8 +555,8 @@ function Facilities() {
                           border: "0.8px solid #F47C59",
                           backgroundColor: "#F47C59",
                           color: "#FCF9F6",
-                          borderRadius: "999px",
-                          padding: "10px 18px",
+                          borderRadius: "0px",
+                          padding: "12px",
                           fontFamily: '"Inter", sans-serif',
                           fontSize: "12px",
                           lineHeight: "16px",

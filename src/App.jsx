@@ -2,6 +2,7 @@ import Hero from "./Hero.jsx";
 import About from "./About.jsx";
 import FeaturedRooms from "./FeaturedRooms.jsx";
 import Facilities from "./Facilities.jsx";
+import Location from "./Location.jsx";
 
 function App() {
   return (
@@ -27,16 +28,17 @@ function App() {
         style={{
           position: "relative",
           zIndex: 10,
-          /* Rounded top corners + shadow untuk efek premium overlay */
-          borderRadius: "16px 16px 0 0",
+          borderRadius: "0px",
+          borderTop: "0.8px solid rgba(36,18,8,0.22)",
           boxShadow:
-            "0 -12px 48px rgba(10,5,2,0.30), 0 -2px 8px rgba(10,5,2,0.18)",
+            "rgba(0,0,0,0.035) 0px 2.8px 2.2px, rgba(0,0,0,0.047) 0px 6.7px 5.3px, rgba(0,0,0,0.06) 0px 12.5px 10px, rgba(0,0,0,0.07) 0px 22.3px 17.9px, rgba(0,0,0,0.086) 0px 41.8px 33.4px, rgba(0,0,0,0.12) 0px 100px 80px",
           overflow: "hidden",
         }}
       >
         <About />
         <FeaturedRooms />
         <Facilities />
+        <Location />
       </div>
     </div>
   );

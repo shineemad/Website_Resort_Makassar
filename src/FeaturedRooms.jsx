@@ -222,7 +222,7 @@ function FeaturedRooms() {
         {
           y: 0,
           opacity: 1,
-          duration: 0.64,
+          duration: 0.74,
           stagger: 0.06,
           ease: "power2.out",
           scrollTrigger: {
@@ -278,10 +278,27 @@ function FeaturedRooms() {
         const signedDistance = (cardCenter - scrollerCenter) / maxDistance;
         const normalized = Math.min(distance / maxDistance, 1);
 
-        const shiftX = Math.max(-14, Math.min(14, -signedDistance * 14));
-        const shiftY = normalized * 14;
-        const scale = 1.018 - normalized * 0.1;
-        const rotateY = -signedDistance * 10;
+        const targetShiftX = Math.max(-18, Math.min(18, -signedDistance * 18));
+        const targetShiftY = normalized * 16;
+        const targetScale = 1.028 - normalized * 0.12;
+        const targetRotateY = -signedDistance * 12;
+
+        const prevShiftX = Number(card.dataset.shiftX ?? "0");
+        const prevShiftY = Number(card.dataset.shiftY ?? "0");
+        const prevScale = Number(card.dataset.scale ?? "1");
+        const prevRotateY = Number(card.dataset.rotateY ?? "0");
+        const smoothFactor = 0.24;
+
+        const shiftX = prevShiftX + (targetShiftX - prevShiftX) * smoothFactor;
+        const shiftY = prevShiftY + (targetShiftY - prevShiftY) * smoothFactor;
+        const scale = prevScale + (targetScale - prevScale) * smoothFactor;
+        const rotateY =
+          prevRotateY + (targetRotateY - prevRotateY) * smoothFactor;
+
+        card.dataset.shiftX = shiftX.toFixed(3);
+        card.dataset.shiftY = shiftY.toFixed(3);
+        card.dataset.scale = scale.toFixed(4);
+        card.dataset.rotateY = rotateY.toFixed(3);
 
         card.style.transform = `translate3d(${shiftX.toFixed(2)}px, ${shiftY.toFixed(2)}px, 0) scale(${scale.toFixed(3)}) rotateY(${rotateY.toFixed(2)}deg)`;
         card.style.opacity = `${(1 - normalized * 0.2).toFixed(3)}`;
@@ -327,7 +344,7 @@ function FeaturedRooms() {
         if (dragRef.current.isPointerDown) return;
         const closestIndex = getClosestCardIndex();
         scrollToCard(closestIndex);
-      }, 140);
+      }, 180);
     };
 
     scroller.addEventListener("scroll", scheduleSnapToClosestCard, {
@@ -442,11 +459,11 @@ function FeaturedRooms() {
 
         .rooms-panel {
           transition:
-            transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
-            box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+            transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+            box-shadow 420ms cubic-bezier(0.22, 1, 0.36, 1),
             border-color 300ms ease,
-            opacity 260ms ease,
-            filter 260ms ease;
+            opacity 380ms ease,
+            filter 380ms ease;
           transform-origin: center center;
           will-change: transform, opacity, filter;
           scroll-snap-stop: always;
@@ -457,7 +474,7 @@ function FeaturedRooms() {
         }
 
         .rooms-image {
-          transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+          transition: transform 860ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .rooms-panel:hover .rooms-image {
@@ -465,31 +482,12 @@ function FeaturedRooms() {
         }
 
         .rooms-link {
-          position: relative;
-          overflow: hidden;
-          isolation: isolate;
-          border: 0.8px solid rgba(36,18,8,0.24);
-          border-radius: 999px;
-          padding: 10px 18px;
-          background-color: rgba(252,249,246,0.88);
-          transition: transform 560ms cubic-bezier(0.19, 1, 0.22, 1), color 420ms ease, border-color 420ms ease, background-color 420ms ease;
+          border: 0;
+          border-radius: 0px;
+          padding: 12px;
+          background-color: ${T.primary};
+          transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, background-color 300ms ease;
           will-change: transform;
-        }
-
-        .rooms-link::before {
-          content: "";
-          position: absolute;
-          inset: -1px;
-          background: linear-gradient(112deg, rgba(244,124,89,0) 24%, rgba(244,124,89,0.2) 48%, rgba(244,124,89,0) 72%);
-          transform: translateX(-148%) skewX(-22deg);
-          transition: transform 820ms cubic-bezier(0.22, 1, 0.36, 1);
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        .rooms-link > * {
-          position: relative;
-          z-index: 1;
         }
 
         .rooms-link .rooms-link-label {
@@ -504,30 +502,24 @@ function FeaturedRooms() {
         .rooms-link:hover {
           color: ${T.neutral};
           background-color: ${T.secondary};
-          border-color: ${T.secondary};
-          transform: translateY(-2px) scale(1.014);
-        }
-
-        .rooms-link:hover::before {
-          transform: translateX(148%) skewX(-22deg);
+          transform: translateY(-1px);
         }
 
         .rooms-link:hover .rooms-link-label {
-          letter-spacing: 1.45px;
-          transform: translateX(0.6px);
+          letter-spacing: 1.2px;
+          transform: none;
         }
 
         .rooms-link:hover .rooms-link-icon {
-          transform: translateX(1.5px) translateY(-0.5px) rotate(8deg);
+          transform: translateX(1px);
         }
 
         .rooms-link:active {
-          transform: translateY(0) scale(0.99);
+          transform: translateY(0);
         }
 
         @media (prefers-reduced-motion: reduce) {
           .rooms-link,
-          .rooms-link::before,
           .rooms-link .rooms-link-label,
           .rooms-link .rooms-link-icon {
             transition: none;
@@ -543,7 +535,7 @@ function FeaturedRooms() {
           position: relative;
           overflow: hidden;
           isolation: isolate;
-          transition: transform 520ms cubic-bezier(0.19, 1, 0.22, 1), border-color 360ms ease, background-color 360ms ease, color 360ms ease;
+          transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1), border-color 320ms ease, background-color 320ms ease, color 320ms ease;
           will-change: transform;
         }
 
@@ -553,7 +545,7 @@ function FeaturedRooms() {
           inset: -1px;
           background: linear-gradient(112deg, rgba(244,124,89,0) 24%, rgba(244,124,89,0.28) 48%, rgba(244,124,89,0) 72%);
           transform: translateX(-148%) skewX(-22deg);
-          transition: transform 820ms cubic-bezier(0.22, 1, 0.36, 1);
+          transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
           pointer-events: none;
           z-index: 0;
         }
@@ -593,7 +585,7 @@ function FeaturedRooms() {
 
         .rooms-dot-btn {
           position: relative;
-          transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), border-color 320ms ease, background-color 320ms ease;
+          transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1), border-color 300ms ease, background-color 300ms ease;
         }
 
         .rooms-dot-btn::after {
@@ -603,7 +595,7 @@ function FeaturedRooms() {
           border-radius: 999px;
           background: linear-gradient(120deg, rgba(244,124,89,0.04) 0%, rgba(244,124,89,0.36) 52%, rgba(244,124,89,0.04) 100%);
           opacity: 0;
-          transition: opacity 320ms ease;
+          transition: opacity 300ms ease;
         }
 
         .rooms-dot-btn:hover {
@@ -616,15 +608,11 @@ function FeaturedRooms() {
 
         @media (min-width: 1280px) {
           .rooms-link {
-            transition: transform 640ms cubic-bezier(0.19, 1, 0.22, 1), color 460ms ease, border-color 460ms ease, background-color 460ms ease;
+            transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, background-color 300ms ease;
           }
 
           .rooms-link:hover {
-            transform: translateY(-2.5px) scale(1.018);
-          }
-
-          .rooms-link::before {
-            transition-duration: 940ms;
+            transform: translateY(-1px);
           }
 
           .rooms-nav-btn:hover:not(:disabled) {
@@ -634,15 +622,11 @@ function FeaturedRooms() {
 
         @media (max-width: 767px) {
           .rooms-link {
-            transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1), color 240ms ease, border-color 240ms ease, background-color 240ms ease;
+            transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, background-color 300ms ease;
           }
 
           .rooms-link:hover {
-            transform: translateY(-1px) scale(1.008);
-          }
-
-          .rooms-link::before {
-            transition-duration: 520ms;
+            transform: translateY(-1px);
           }
 
           .rooms-nav-btn {
@@ -679,7 +663,7 @@ function FeaturedRooms() {
         ref={sectionRef}
         id="featured-rooms"
         style={{
-          backgroundColor: "#1E120A",
+          backgroundColor: T.secondary,
           padding: "96px 0",
           position: "relative",
           overflow: "hidden",
@@ -986,7 +970,7 @@ function FeaturedRooms() {
                             lineHeight: "16px",
                             letterSpacing: "1.2px",
                             textTransform: "uppercase",
-                            color: T.secondary,
+                            color: T.neutral,
                           }}
                         >
                           <span className="rooms-link-label">Lihat Detail</span>
