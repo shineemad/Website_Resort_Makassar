@@ -7,6 +7,9 @@ import {
   Waves,
 } from "lucide-react";
 
+const SECTION_TWO_SHADOW =
+  "rgba(0,0,0,0.035) 0px 2.8px 2.2px, rgba(0,0,0,0.047) 0px 6.7px 5.3px, rgba(0,0,0,0.06) 0px 12.5px 10px, rgba(0,0,0,0.07) 0px 22.3px 17.9px, rgba(0,0,0,0.086) 0px 41.8px 33.4px, rgba(0,0,0,0.12) 0px 100px 80px";
+
 const facilities = [
   {
     label: "Our Pool Experience",
@@ -156,8 +159,9 @@ function Facilities() {
           position: relative;
           overflow: hidden;
           isolation: isolate;
+          box-shadow: ${SECTION_TWO_SHADOW};
           transform: translateY(calc(var(--zigzag-offset, 0px) + var(--parallax-shift, 0px)));
-          transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+          transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 300ms ease;
           will-change: transform;
         }
 
@@ -298,6 +302,7 @@ function Facilities() {
         }
 
         .fac-pill {
+          box-shadow: ${SECTION_TWO_SHADOW};
           transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, border-color 300ms ease, background-color 300ms ease;
           will-change: transform;
         }
@@ -557,6 +562,7 @@ function Facilities() {
                           color: "#FCF9F6",
                           borderRadius: "0px",
                           padding: "12px",
+                          boxShadow: SECTION_TWO_SHADOW,
                           fontFamily: '"Inter", sans-serif',
                           fontSize: "12px",
                           lineHeight: "16px",

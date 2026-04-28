@@ -470,7 +470,7 @@ function FeaturedRooms() {
         }
 
         .rooms-panel:hover {
-          box-shadow: rgba(0,0,0,0.06) 0px 10px 24px, rgba(244,124,89,0.2) 0px 20px 36px -22px;
+          box-shadow: ${T.shadow};
         }
 
         .rooms-image {
@@ -486,6 +486,7 @@ function FeaturedRooms() {
           border-radius: 0px;
           padding: 12px;
           background-color: ${T.primary};
+          box-shadow: ${T.shadow};
           transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms ease, background-color 300ms ease;
           will-change: transform;
         }
@@ -1076,8 +1077,8 @@ function FeaturedRooms() {
                       overflow: "hidden",
                       boxShadow:
                         activeCard === index
-                          ? "inset 0 0 0 1px rgba(255,255,255,0.08), 0 4px 14px rgba(244,124,89,0.24)"
-                          : "inset 0 0 0 1px rgba(255,255,255,0.04)",
+                          ? "inset 0 0 0 1px rgba(255,255,255,0.08), 0 8px 18px rgba(36,18,8,0.12)"
+                          : "inset 0 0 0 1px rgba(255,255,255,0.04), 0 4px 10px rgba(36,18,8,0.06)",
                       transition:
                         "background-color 280ms ease, border-color 280ms ease, box-shadow 280ms ease",
                     }}
