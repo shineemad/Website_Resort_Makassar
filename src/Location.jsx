@@ -36,51 +36,233 @@ const nearbyAttractions = [
 
 function Location() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const itemRefs = useRef([]);
+  const sectionRef = useRef(null);
+  const activeIndexRef = useRef(0);
 
   const activePlace = useMemo(
     () => nearbyAttractions[activeIndex] ?? nearbyAttractions[0],
-    [activeIndex]
+    [activeIndex],
   );
 
-  useEffect(() => {
-    const observers = itemRefs.current
-      .filter(Boolean)
-      .map((node, index) => {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                setActiveIndex(index);
-              }
-            });
-          },
-          {
-            root: null,
-            threshold: 0.65,
-          }
-        );
+  const progressPercent = useMemo(() => {
+    const total = nearbyAttractions.length;
+    if (total <= 1) return 100;
+    return (activeIndex / (total - 1)) * 100;
+  }, [activeIndex]);
 
-        observer.observe(node);
-        return observer;
-      });
+  useEffect(() => {
+    const viewportQuery = window.matchMedia("(max-width: 767px)");
+    const handleViewportChange = (event) => {
+      setIsMobileViewport(event.matches);
+    };
+
+    setIsMobileViewport(viewportQuery.matches);
+    if (viewportQuery.addEventListener) {
+      viewportQuery.addEventListener("change", handleViewportChange);
+    } else {
+      viewportQuery.addListener(handleViewportChange);
+    }
 
     return () => {
-      observers.forEach((observer) => observer.disconnect());
+      if (viewportQuery.removeEventListener) {
+        viewportQuery.removeEventListener("change", handleViewportChange);
+      } else {
+        viewportQuery.removeListener(handleViewportChange);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
+
+  useEffect(() => {
+    const nodes = itemRefs.current.filter(Boolean);
+    if (nodes.length === 0) return;
+
+    let rafId = null;
+
+    const updateActiveByScroll = () => {
+      const viewportHeight = window.innerHeight || 1;
+      const focusLine = viewportHeight * (isMobileViewport ? 0.42 : 0.48);
+      const switchGuardPx = isMobileViewport ? 16 : 24;
+
+      let bestIndex = activeIndexRef.current;
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      nodes.forEach((node, index) => {
+        const rect = node.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const distance = Math.abs(center - focusLine);
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = index;
+        }
+      });
+
+      const currentNode = nodes[activeIndexRef.current];
+      let currentDistance = Number.POSITIVE_INFINITY;
+      if (currentNode) {
+        const currentRect = currentNode.getBoundingClientRect();
+        const currentCenter = currentRect.top + currentRect.height / 2;
+        currentDistance = Math.abs(currentCenter - focusLine);
+      }
+
+      const shouldSwitch =
+        bestIndex !== activeIndexRef.current &&
+        bestDistance + switchGuardPx < currentDistance;
+
+      if (shouldSwitch) {
+        activeIndexRef.current = bestIndex;
+        setActiveIndex(bestIndex);
+      }
+
+      rafId = null;
+    };
+
+    const onScrollOrResize = () => {
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(updateActiveByScroll);
+    };
+
+    onScrollOrResize();
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize);
+
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+    };
+  }, [isMobileViewport]);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const revealNodes =
+      sectionRef.current?.querySelectorAll("[data-loc-reveal]");
+    if (!revealNodes || revealNodes.length === 0) return;
+
+    if (prefersReducedMotion) {
+      revealNodes.forEach((node) => node.classList.add("is-visible"));
+      return;
+    }
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        });
+      },
+      {
+        root: null,
+        threshold: isMobileViewport ? 0.12 : 0.22,
+        rootMargin: isMobileViewport ? "0px 0px -10% 0px" : "0px 0px -6% 0px",
+      },
+    );
+
+    revealNodes.forEach((node) => revealObserver.observe(node));
+    return () => revealObserver.disconnect();
+  }, [isMobileViewport]);
 
   return (
     <section
       id="location"
-      className="relative overflow-hidden bg-[#FCF9F6] py-18 lg:py-24"
+      ref={sectionRef}
+      className="relative overflow-hidden bg-[#F6ECE0] py-18 lg:py-24"
     >
+      <style>{`
+        .loc-reveal {
+          opacity: 0;
+          transform: translate3d(0, var(--loc-reveal-distance, 16px), 0) scale(0.992);
+          transition:
+            opacity var(--loc-reveal-duration, 700ms) cubic-bezier(0.22, 1, 0.36, 1),
+            transform var(--loc-reveal-duration, 700ms) cubic-bezier(0.22, 1, 0.36, 1);
+          transition-delay: var(--loc-delay, 0ms);
+        }
+
+        .loc-reveal.is-visible {
+          opacity: 1;
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+
+        .loc-headline {
+          --loc-delay: 60ms;
+          --loc-reveal-distance: 14px;
+        }
+
+        .loc-intro {
+          --loc-delay: 120ms;
+          --loc-reveal-distance: 14px;
+        }
+
+        .loc-item {
+          --loc-delay: calc(160ms + var(--item-order, 0) * 50ms);
+          --loc-reveal-distance: 18px;
+        }
+
+        .loc-map-shell {
+          --loc-delay: 180ms;
+          --loc-reveal-distance: 18px;
+        }
+
+        .loc-map-grid {
+          background-image:
+            linear-gradient(to right, rgba(36,18,8,0.08) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(36,18,8,0.08) 1px, transparent 1px);
+          background-size: 28px 28px;
+          opacity: 0.3;
+        }
+
+        @media (max-width: 767px) {
+          .loc-reveal {
+            --loc-reveal-duration: 460ms;
+            --loc-reveal-distance: 10px;
+          }
+
+          .loc-item {
+            --loc-delay: calc(110ms + var(--item-order, 0) * 26ms);
+          }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .loc-reveal {
+            --loc-reveal-duration: 580ms;
+          }
+
+          .loc-item {
+            --loc-delay: calc(140ms + var(--item-order, 0) * 38ms);
+          }
+        }
+
+        @media (min-width: 1024px) {
+          .loc-map-shell {
+            --loc-reveal-distance: 22px;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .loc-reveal {
+            transition: none;
+            opacity: 1;
+            transform: none !important;
+          }
+        }
+      `}</style>
+
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(55% 45% at 12% 10%, rgba(244,124,89,0.14), transparent 72%), radial-gradient(40% 35% at 88% 82%, rgba(36,18,8,0.08), transparent 74%)",
+            "radial-gradient(58% 48% at 14% 8%, rgba(244,124,89,0.18), transparent 70%), radial-gradient(42% 36% at 88% 84%, rgba(36,18,8,0.12), transparent 76%)",
         }}
       />
 
@@ -88,7 +270,8 @@ function Location() {
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14">
           <div className="text-left">
             <p
-              className="text-xs font-semibold uppercase tracking-[1.2px]"
+              className="loc-headline loc-reveal text-xs font-semibold uppercase tracking-[1.2px]"
+              data-loc-reveal
               style={{
                 color: "#F47C59",
                 fontFamily: '"Inter", sans-serif',
@@ -99,7 +282,8 @@ function Location() {
             </p>
 
             <h2
-              className="mt-3 max-w-[16ch] text-4xl sm:text-5xl lg:text-[56px]"
+              className="loc-headline loc-reveal mt-3 max-w-[16ch] text-4xl sm:text-5xl lg:text-[56px]"
+              data-loc-reveal
               style={{
                 color: "#241208",
                 fontFamily: '"Instrument Serif", serif',
@@ -111,113 +295,150 @@ function Location() {
               Jejak Kota Dimulai Dari Sini.
             </h2>
 
-            <p
-              className="mt-5 max-w-[56ch]"
-              style={{
-                color: "rgba(36,18,8,0.72)",
-                fontFamily: '"Inter", sans-serif',
-                fontSize: "14px",
-                fontWeight: 400,
-                lineHeight: "20px",
-                letterSpacing: "-0.025em",
-              }}
+            <div
+              className="loc-intro loc-reveal relative mt-10 pl-6"
+              data-loc-reveal
             >
-              Scroll daftar destinasi berikut untuk membaca cerita singkat tiap
-              titik. Di sisi kanan, peta tetap berada pada posisi yang stabil
-              agar Anda bisa memetakan perjalanan tanpa kehilangan konteks.
-            </p>
+              <div
+                aria-hidden="true"
+                className="absolute bottom-2 left-[6px] top-2 w-[1.5px]"
+                style={{ backgroundColor: "rgba(36,18,8,0.18)" }}
+              />
+              <div
+                aria-hidden="true"
+                className="absolute left-[3px] top-2 w-[7px]"
+                style={{
+                  backgroundColor: "#F47C59",
+                  height: `${Math.max(8, progressPercent)}%`,
+                  transition: "height 460ms cubic-bezier(0.22, 1, 0.36, 1)",
+                }}
+              />
 
-            <ul className="mt-10 space-y-6 lg:space-y-8">
-              {nearbyAttractions.map((place, index) => {
-                const isActive = index === activeIndex;
+              <ul className="space-y-6 lg:space-y-8">
+                {nearbyAttractions.map((place, index) => {
+                  const isActive = index === activeIndex;
 
-                return (
-                  <li
-                    key={place.name}
-                    ref={(node) => {
-                      itemRefs.current[index] = node;
-                    }}
-                    className="relative rounded-[2px] p-4 transition-all duration-300"
-                    style={{
-                      border: "0.8px solid rgba(36,18,8,0.14)",
-                      backgroundColor: isActive
-                        ? "rgba(255,255,255,0.84)"
-                        : "rgba(252,249,246,0.65)",
-                      boxShadow: isActive
-                        ? "rgba(0,0,0,0.032) 0px 2.3px 1.8px, rgba(0,0,0,0.042) 0px 5.6px 4.3px, rgba(0,0,0,0.054) 0px 10.5px 8px, rgba(0,0,0,0.062) 0px 18.7px 14.3px"
-                        : "none",
-                      transform: isActive ? "translateY(-2px)" : "translateY(0)",
-                    }}
-                  >
-                    <div className="flex items-start gap-3">
-                      <span
-                        className="mt-[2px] inline-flex h-7 w-7 shrink-0 items-center justify-center"
+                  return (
+                    <li
+                      key={place.name}
+                      ref={(node) => {
+                        itemRefs.current[index] = node;
+                      }}
+                      className="loc-item loc-reveal relative rounded-[2px] p-4 transition-all duration-300"
+                      data-loc-reveal
+                      style={{
+                        "--item-order": index,
+                        border: isActive
+                          ? "0.8px solid rgba(36,18,8,0.22)"
+                          : "0.8px solid rgba(36,18,8,0.14)",
+                        backgroundColor: isActive
+                          ? "rgba(255,255,255,0.84)"
+                          : "rgba(255,255,255,0.45)",
+                        boxShadow: isActive
+                          ? "rgba(0,0,0,0.032) 0px 2.3px 1.8px, rgba(0,0,0,0.042) 0px 5.6px 4.3px, rgba(0,0,0,0.054) 0px 10.5px 8px, rgba(0,0,0,0.062) 0px 18.7px 14.3px"
+                          : "none",
+                        transform: isActive
+                          ? "translateY(-2px)"
+                          : "translateY(0)",
+                      }}
+                    >
+                      <div
+                        aria-hidden="true"
+                        className="absolute -left-5 top-1/2 hidden h-[10px] w-[10px] -translate-y-1/2 rounded-full sm:block"
                         style={{
-                          border: "0.8px solid rgba(36,18,8,0.18)",
-                          borderRadius: "2px",
                           backgroundColor: isActive
-                            ? "rgba(244,124,89,0.18)"
-                            : "rgba(244,124,89,0.08)",
+                            ? "#F47C59"
+                            : "rgba(36,18,8,0.22)",
+                          boxShadow: isActive
+                            ? "0 0 0 4px rgba(244,124,89,0.2)"
+                            : "none",
+                          transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+                        }}
+                      />
+
+                      <p
+                        className="mb-2 text-[11px] uppercase tracking-[1.2px]"
+                        style={{
+                          color: isActive ? "#F47C59" : "rgba(36,18,8,0.5)",
+                          fontFamily: '"Inter", sans-serif',
                         }}
                       >
-                        <MapPin
-                          size={14}
-                          strokeWidth={1.8}
-                          className="text-[#241208]"
-                        />
-                      </span>
+                        Stop {String(index + 1).padStart(2, "0")}
+                      </p>
 
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <p
-                            className="font-semibold"
-                            style={{
-                              color: "#241208",
-                              fontFamily: '"Inter", sans-serif',
-                              fontSize: "14px",
-                              lineHeight: "20px",
-                              letterSpacing: "-0.025em",
-                            }}
-                          >
-                            {place.name}
-                          </p>
-
-                          <p
-                            className="text-xs uppercase tracking-[1.2px]"
-                            style={{
-                              color: isActive ? "#F47C59" : "rgba(36,18,8,0.55)",
-                              fontFamily: '"Inter", sans-serif',
-                              lineHeight: "16px",
-                            }}
-                          >
-                            {place.detail}
-                          </p>
-                        </div>
-
-                        <p
-                          className="mt-2 text-sm transition-opacity duration-300"
+                      <div className="flex items-start gap-3">
+                        <span
+                          className="mt-[2px] inline-flex h-7 w-7 shrink-0 items-center justify-center"
                           style={{
-                            color: "rgba(36,18,8,0.64)",
-                            fontFamily: '"Inter", sans-serif',
-                            lineHeight: "20px",
-                            letterSpacing: "-0.01em",
-                            opacity: isActive ? 1 : 0.72,
+                            border: "0.8px solid rgba(36,18,8,0.18)",
+                            borderRadius: "2px",
+                            backgroundColor: isActive
+                              ? "rgba(244,124,89,0.18)"
+                              : "rgba(244,124,89,0.08)",
                           }}
                         >
-                          {place.narrative}
-                        </p>
+                          <MapPin
+                            size={14}
+                            strokeWidth={1.8}
+                            className="text-[#241208]"
+                          />
+                        </span>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <p
+                              className="font-semibold"
+                              style={{
+                                color: "#241208",
+                                fontFamily: '"Inter", sans-serif',
+                                fontSize: "14px",
+                                lineHeight: "20px",
+                                letterSpacing: "-0.025em",
+                              }}
+                            >
+                              {place.name}
+                            </p>
+
+                            <p
+                              className="text-xs uppercase tracking-[1.2px]"
+                              style={{
+                                color: isActive
+                                  ? "#F47C59"
+                                  : "rgba(36,18,8,0.55)",
+                                fontFamily: '"Inter", sans-serif',
+                                lineHeight: "16px",
+                              }}
+                            >
+                              {place.detail}
+                            </p>
+                          </div>
+
+                          <p
+                            className="mt-2 text-sm transition-opacity duration-300"
+                            style={{
+                              color: "rgba(36,18,8,0.64)",
+                              fontFamily: '"Inter", sans-serif',
+                              lineHeight: "20px",
+                              letterSpacing: "-0.01em",
+                              opacity: isActive ? 1 : 0.72,
+                            }}
+                          >
+                            {place.narrative}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
 
           <div className="lg:pt-8">
             <div className="lg:sticky lg:top-24">
               <div
-                className="overflow-hidden rounded-[2px]"
+                className="loc-map-shell loc-reveal relative overflow-hidden rounded-[2px]"
+                data-loc-reveal
                 style={{
                   border: "0.8px solid rgba(36,18,8,0.16)",
                   boxShadow:
@@ -225,7 +446,12 @@ function Location() {
                 }}
               >
                 <div
-                  className="flex items-center justify-between px-4 py-3"
+                  aria-hidden="true"
+                  className="loc-map-grid pointer-events-none absolute inset-0 z-[1]"
+                />
+
+                <div
+                  className="relative z-[2] flex items-center justify-between px-4 py-3"
                   style={{
                     borderBottom: "0.8px solid rgba(36,18,8,0.14)",
                     backgroundColor: "rgba(255,255,255,0.84)",
@@ -255,7 +481,7 @@ function Location() {
                   <iframe
                     title="Makassar Golden Hotel Location"
                     src="https://maps.google.com/maps?q=Makassar%20Golden%20Hotel%2C%20Jl.%20Pasar%20Ikan%20No.%2052%2C%20Makassar&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                    className="h-full w-full border-0"
+                    className="relative z-[2] h-full w-full border-0"
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                     allowFullScreen
@@ -263,7 +489,7 @@ function Location() {
                 </div>
 
                 <div
-                  className="px-4 py-3"
+                  className="relative z-[2] px-4 py-3"
                   style={{
                     borderTop: "0.8px solid rgba(36,18,8,0.14)",
                     backgroundColor: "rgba(255,255,255,0.74)",
