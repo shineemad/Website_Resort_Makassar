@@ -57,6 +57,17 @@ const Hero = () => {
         .a-scrollline { animation: lineShrinkV 300ms cubic-bezier(0.4,0,0.2,1) 700ms both; transform-origin: top; }
         .cta-btn { transition: background-color 0.3s ease, color 0.3s ease; }
         .cta-btn:hover { background-color: #241208 !important; color: #FCF9F6 !important; }
+        @keyframes heroTicker {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+        .hero-ticker-track {
+          animation: heroTicker 32s linear infinite;
+          will-change: transform;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .hero-ticker-track { animation: none; }
+        }
       `}</style>
 
       <section
@@ -88,40 +99,36 @@ const Hero = () => {
           />
         </div>
 
-        {/* Top bar */}
-        <header
-          className="a1 absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 py-4 sm:px-10 lg:px-12"
-          style={{
-            fontFamily: TOKENS.bodyFont,
-            fontSize: "12px",
-            lineHeight: "16px",
-            letterSpacing: "1.2px",
-            textTransform: "uppercase",
-            color: "rgba(252,249,246,0.75)",
-            borderBottom: "0.8px solid rgba(252,249,246,0.14)",
-          }}
+        {/* Left vertical section counter */}
+        <div
+          className="a2 absolute left-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col items-center gap-4 sm:flex lg:left-6"
+          aria-hidden="true"
         >
-          <span style={{ color: TOKENS.neutral, letterSpacing: "1.2px" }}>
-            Makassar Golden Hotel
+          <span
+            style={{
+              writingMode: "vertical-rl",
+              fontFamily: TOKENS.bodyFont,
+              fontSize: "10px",
+              lineHeight: 1,
+              letterSpacing: "1.8px",
+              textTransform: "uppercase",
+              color: "rgba(252,249,246,0.36)",
+              transform: "rotate(180deg)",
+              userSelect: "none",
+            }}
+          >
+            01 · 07
           </span>
-          <div className="hidden items-center gap-3 sm:flex">
-            <span>★★★★ Pantai Losari</span>
-            <span
-              style={{
-                color: TOKENS.primary,
-                border: "0.8px solid rgba(244,124,89,0.6)",
-                padding: "4px 12px",
-                letterSpacing: "1.2px",
-                borderRadius: "2px",
-              }}
-            >
-              Est. 1978
-            </span>
-          </div>
-        </header>
-
+          <div
+            style={{
+              width: "0.8px",
+              height: "32px",
+              backgroundColor: "rgba(252,249,246,0.18)",
+            }}
+          />
+        </div>
         {/* Main content */}
-        <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col justify-end px-6 pb-12 sm:px-10 sm:pb-16 lg:px-12">
+        <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col justify-end px-6 pb-20 sm:px-10 sm:pb-24 lg:px-12">
           {/* Accent label */}
           <p
             className="a2 mb-5"
@@ -249,6 +256,67 @@ const Hero = () => {
               backgroundColor: TOKENS.primary,
             }}
           />
+        </div>
+
+        {/* Bottom ticker marquee */}
+        <div
+          className="a-bot absolute bottom-0 left-0 right-0 z-20 overflow-hidden"
+          aria-hidden="true"
+          style={{
+            height: "40px",
+            borderTop: "0.8px solid rgba(252,249,246,0.12)",
+            backgroundColor: "rgba(36,18,8,0.42)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+          }}
+        >
+          <div
+            className="hero-ticker-track flex h-full items-center"
+            style={{ width: "max-content" }}
+          >
+            {[
+              "Makassar Golden Hotel",
+              "Heritage Hotel",
+              "Sulawesi Selatan",
+              "Bintang ★★★★",
+              "Pantai Losari",
+              "Sejak 1985",
+              "Jl. Pasar Ikan",
+              "Makassar Golden Hotel",
+              "Heritage Hotel",
+              "Sulawesi Selatan",
+              "Bintang ★★★★",
+              "Pantai Losari",
+              "Sejak 1985",
+              "Jl. Pasar Ikan",
+            ].map((item, i) => (
+              <React.Fragment key={i}>
+                <span
+                  style={{
+                    fontFamily: TOKENS.bodyFont,
+                    fontSize: "10px",
+                    letterSpacing: "1.6px",
+                    textTransform: "uppercase",
+                    color: "rgba(252,249,246,0.55)",
+                    padding: "0 22px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {item}
+                </span>
+                <span
+                  style={{
+                    color: TOKENS.primary,
+                    fontSize: "8px",
+                    flexShrink: 0,
+                    lineHeight: 1,
+                  }}
+                >
+                  ✦
+                </span>
+              </React.Fragment>
+            ))}
+          </div>
         </div>
       </section>
     </>
