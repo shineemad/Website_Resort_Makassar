@@ -82,10 +82,10 @@ const Hero = () => {
             muted
             loop
             playsInline
-            poster="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1280&q=50"
+            poster="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1280&q=60"
           >
             <source
-              src="https://videos.pexels.com/video-files/1739011/1739011-hd_1920_1080_30fps.mp4"
+              src="https://videos.pexels.com/video-files/3129957/3129957-hd_1920_1080_24fps.mp4"
               type="video/mp4"
             />
           </video>

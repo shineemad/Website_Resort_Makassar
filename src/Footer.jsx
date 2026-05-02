@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import { ArrowUpRight, MapPin, Phone, Mail } from "lucide-react";
+import { MapPin, Phone, Mail } from "lucide-react";
 
 const navLinks = [
   { label: "Tentang Kami", href: "#about" },
-  { label: "Kamar & Suite", href: "#rooms" },
+  { label: "Kamar & Suite", href: "#featured-rooms" },
   { label: "Fasilitas", href: "#facilities" },
   { label: "Lokasi", href: "#location" },
   { label: "Ulasan Tamu", href: "#testimonials" },
@@ -55,7 +55,7 @@ function Footer() {
       id="footer"
       ref={sectionRef}
       className="relative overflow-hidden"
-      style={{ backgroundColor: "#241208" }}
+      style={{ backgroundColor: "#FCF9F6" }}
     >
       <style>{`
         .ft-reveal {
@@ -72,73 +72,104 @@ function Footer() {
           transform: none;
         }
 
+        .ft-hairline {
+          border-top: 0.8px solid rgba(36, 18, 8, 0.2);
+        }
+
+        .ft-gridline {
+          border-top: 0.8px solid rgba(36, 18, 8, 0.14);
+          border-bottom: 0.8px solid rgba(36, 18, 8, 0.14);
+        }
+
         .ft-nav-link {
           position: relative;
           display: inline-block;
-          color: rgba(252, 249, 246, 0.72);
-          transition: color 280ms cubic-bezier(0.4, 0, 0.2, 1);
+          color: rgba(36, 18, 8, 0.72);
+          transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
           font-family: "Inter", sans-serif;
-          font-size: 13px;
-          line-height: 20px;
-          letter-spacing: -0.01em;
+          font-size: 12px;
+          line-height: 16px;
+          letter-spacing: 1.2px;
+          text-transform: uppercase;
         }
 
         .ft-nav-link::after {
           content: "";
           position: absolute;
-          bottom: -1px;
-          left: 0;
+          bottom: -3px;
+          left: 50%;
+          transform: translateX(-50%);
           width: 0%;
           height: 0.8px;
           background-color: #F47C59;
-          transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1);
+          transition: width 300ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .ft-nav-link:hover {
-          color: #FCF9F6;
+          color: #241208;
         }
 
         .ft-nav-link:hover::after {
           width: 100%;
         }
 
-        .ft-cta {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          background-color: #F47C59;
-          color: #FCF9F6;
-          border: 0px solid transparent;
-          border-radius: 0px;
-          padding: 12px 18px;
-          font-family: "Inter", sans-serif;
-          font-size: 12px;
-          line-height: 16px;
-          letter-spacing: 1.2px;
-          text-transform: uppercase;
-          transition:
-            background-color 280ms cubic-bezier(0.4, 0, 0.2, 1),
-            transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+        .ft-note-link {
+          color: rgba(36, 18, 8, 0.66);
+          transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+          text-decoration: none;
         }
 
-        .ft-cta:hover {
-          background-color: rgba(244, 124, 89, 0.84);
-          transform: translateY(-1px);
-        }
-
-        .ft-cta:active {
-          transform: translateY(0);
+        .ft-note-link:hover {
+          color: #F47C59;
         }
 
         .ft-divider {
           border: none;
-          border-top: 0.8px solid rgba(252, 249, 246, 0.18);
+          border-top: 0.8px solid rgba(36, 18, 8, 0.2);
           margin: 0;
+        }
+
+        .ft-end-logo-wrap {
+          border-top: 0.8px solid rgba(36, 18, 8, 0.14);
+          padding-top: 20px;
+          padding-bottom: 26px;
+        }
+
+        .ft-end-logo-mark {
+          display: block;
+          font-family: "Instrument Serif", serif;
+          font-weight: 200;
+          font-size: clamp(64px, 15vw, 196px);
+          line-height: 0.84;
+          letter-spacing: -0.04em;
+          color: rgba(36, 18, 8, 0.92);
+          text-align: center;
+          user-select: none;
+        }
+
+        .ft-end-logo-name {
+          margin-top: 8px;
+          text-align: center;
+          font-family: "Inter", sans-serif;
+          font-size: clamp(10px, 1.5vw, 12px);
+          line-height: 16px;
+          letter-spacing: 1.8px;
+          text-transform: uppercase;
+          color: rgba(36, 18, 8, 0.56);
         }
 
         @media (max-width: 767px) {
           .ft-reveal {
             transition-duration: 480ms;
+          }
+
+          .ft-end-logo-wrap {
+            padding-top: 16px;
+            padding-bottom: 22px;
+          }
+
+          .ft-end-logo-name {
+            letter-spacing: 1.3px;
           }
         }
 
@@ -153,9 +184,6 @@ function Footer() {
             transition: none;
           }
 
-          .ft-cta {
-            transition: none;
-          }
         }
       `}</style>
 
@@ -165,7 +193,7 @@ function Footer() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(52% 44% at 10% 8%, rgba(244,124,89,0.2), transparent 70%), radial-gradient(40% 36% at 90% 88%, rgba(252,249,246,0.1), transparent 72%)",
+            "radial-gradient(56% 44% at 10% 8%, rgba(244,124,89,0.2), transparent 72%), radial-gradient(40% 36% at 90% 88%, rgba(36,18,8,0.08), transparent 72%), linear-gradient(180deg, rgba(252,249,246,1) 0%, rgba(252,249,246,1) 100%)",
         }}
       />
 
@@ -181,90 +209,121 @@ function Footer() {
 
       {/* Main content */}
       <div className="relative z-10 mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-12">
-        {/* Upper block */}
-        <div className="grid grid-cols-1 gap-12 pb-12 pt-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:pb-16 lg:pt-18">
-          {/* Left — brand + tagline + CTA */}
+        {/* Editorial header line */}
+        <div className="ft-hairline" aria-hidden="true" />
+
+        {/* Brand statement */}
+        <div
+          className="ft-reveal pb-10 pt-12 lg:pb-12 lg:pt-14"
+          data-ft-reveal
+          style={{ "--ft-delay": "70ms" }}
+        >
+          <p
+            className="text-xs uppercase tracking-[1.2px]"
+            style={{ color: "#F47C59", fontFamily: '"Inter", sans-serif' }}
+          >
+            Since 1985
+          </p>
+
+          <h2
+            className="mt-4 max-w-[18ch] text-4xl sm:text-5xl lg:text-[56px]"
+            style={{
+              color: "#241208",
+              fontFamily: '"Instrument Serif", serif',
+              fontWeight: 200,
+              lineHeight: 0.94,
+              letterSpacing: "-0.025em",
+            }}
+          >
+            Penutup yang tenang untuk perjalanan Anda di Makassar.
+          </h2>
+
+          <p
+            className="mt-5 max-w-[64ch]"
+            style={{
+              color: "rgba(36,18,8,0.72)",
+              fontFamily: '"Inter", sans-serif',
+              fontSize: "14px",
+              lineHeight: "20px",
+              letterSpacing: "-0.025em",
+            }}
+          >
+            Makassar Golden Hotel merangkum kehangatan heritage, ritme pesisir,
+            dan kenyamanan modern dalam satu alamat yang selalu kembali dicari.
+          </p>
+        </div>
+
+        {/* Triptych grid */}
+        <div className="ft-gridline grid grid-cols-1 gap-8 py-10 lg:grid-cols-[1.2fr_0.9fr] lg:gap-10 lg:py-12">
+          {/* Column 1 - utility note */}
           <div
             className="ft-reveal"
             data-ft-reveal
-            style={{ "--ft-delay": "60ms" }}
+            style={{ "--ft-delay": "110ms" }}
           >
             <p
-              className="text-xs uppercase tracking-[1.2px]"
-              style={{ color: "#F47C59", fontFamily: '"Inter", sans-serif' }}
-            >
-              Since 1985
-            </p>
-
-            <h2
-              className="mt-3 max-w-[15ch] text-4xl sm:text-5xl lg:text-[56px]"
+              className="mb-4 text-xs uppercase tracking-[1.2px]"
               style={{
-                color: "#FCF9F6",
-                fontFamily: '"Instrument Serif", serif',
-                fontWeight: 200,
-                lineHeight: 0.95,
-                letterSpacing: "-0.025em",
+                color: "rgba(36,18,8,0.6)",
+                fontFamily: '"Inter", sans-serif',
               }}
             >
-              Tetap di Jantung Makassar.
-            </h2>
+              Catatan Tamu
+            </p>
 
             <p
-              className="mt-5 max-w-[52ch]"
+              className="max-w-[42ch]"
               style={{
-                color: "rgba(252,249,246,0.72)",
+                color: "rgba(36,18,8,0.82)",
                 fontFamily: '"Inter", sans-serif',
                 fontSize: "14px",
                 lineHeight: "20px",
                 letterSpacing: "-0.025em",
               }}
             >
-              Setiap menginap di Makassar Golden Hotel adalah perjalanan kembali
-              ke warisan kota yang kaya dan hangat. Kami siap menyambut Anda.
+              Dari sunrise di tepi Losari hingga malam penuh rasa khas Makassar,
+              setiap detail dirancang agar perjalanan Anda pulang dengan
+              kenangan yang utuh.
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a href="tel:+62411313737" className="ft-cta">
-                <Phone size={13} strokeWidth={1.8} />
-                <span>Reservasi Sekarang</span>
-                <ArrowUpRight size={13} strokeWidth={1.8} />
-              </a>
+            <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
               <a
                 href="mailto:reservasi@makassargoldenhotel.com"
-                className="text-xs uppercase tracking-[1.2px] transition-colors duration-300"
-                style={{
-                  color: "rgba(252,249,246,0.68)",
-                  fontFamily: '"Inter", sans-serif',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#F47C59")}
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "rgba(252,249,246,0.68)")
-                }
+                className="ft-note-link text-xs uppercase tracking-[1.2px]"
+                style={{ fontFamily: '"Inter", sans-serif' }}
               >
-                atau kirim email →
+                Kirim Email
+              </a>
+              <span style={{ color: "rgba(36,18,8,0.24)" }}>•</span>
+              <a
+                href="tel:+62411313737"
+                className="ft-note-link text-xs uppercase tracking-[1.2px]"
+                style={{ fontFamily: '"Inter", sans-serif' }}
+              >
+                Hubungi Front Desk
               </a>
             </div>
           </div>
 
-          {/* Right — nav + contact */}
+          {/* Column 2 - navigation + contact */}
           <div
-            className="grid grid-cols-1 gap-10 sm:grid-cols-2 ft-reveal"
+            className="grid grid-cols-1 gap-10 ft-reveal"
             data-ft-reveal
-            style={{ "--ft-delay": "120ms" }}
+            style={{ "--ft-delay": "150ms" }}
           >
             {/* Navigation */}
             <div>
               <p
                 className="mb-4 text-xs uppercase tracking-[1.2px]"
                 style={{
-                  color: "rgba(252,249,246,0.48)",
+                  color: "rgba(36,18,8,0.6)",
                   fontFamily: '"Inter", sans-serif',
                 }}
               >
                 Navigasi
               </p>
               <nav>
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                   {navLinks.map((link) => (
                     <li key={link.label}>
                       <a href={link.href} className="ft-nav-link">
@@ -281,7 +340,7 @@ function Footer() {
               <p
                 className="mb-4 text-xs uppercase tracking-[1.2px]"
                 style={{
-                  color: "rgba(252,249,246,0.48)",
+                  color: "rgba(36,18,8,0.6)",
                   fontFamily: '"Inter", sans-serif',
                 }}
               >
@@ -293,9 +352,9 @@ function Footer() {
                     <span
                       className="mt-[2px] inline-flex h-6 w-6 shrink-0 items-center justify-center"
                       style={{
-                        border: "0.8px solid rgba(252,249,246,0.22)",
+                        border: "0.8px solid rgba(36,18,8,0.2)",
                         borderRadius: "2px",
-                        backgroundColor: "rgba(244,124,89,0.14)",
+                        backgroundColor: "rgba(244,124,89,0.12)",
                       }}
                     >
                       <Icon
@@ -306,7 +365,7 @@ function Footer() {
                     </span>
                     <p
                       style={{
-                        color: "rgba(252,249,246,0.72)",
+                        color: "rgba(36,18,8,0.82)",
                         fontFamily: '"Inter", sans-serif',
                         fontSize: "13px",
                         lineHeight: "20px",
@@ -332,7 +391,7 @@ function Footer() {
         >
           <p
             style={{
-              color: "rgba(252,249,246,0.46)",
+              color: "rgba(36,18,8,0.62)",
               fontFamily: '"Inter", sans-serif',
               fontSize: "12px",
               lineHeight: "16px",
@@ -345,7 +404,7 @@ function Footer() {
 
           <p
             style={{
-              color: "rgba(252,249,246,0.38)",
+              color: "rgba(36,18,8,0.56)",
               fontFamily: '"Inter", sans-serif',
               fontSize: "11px",
               lineHeight: "16px",
@@ -355,6 +414,17 @@ function Footer() {
           >
             Heritage Hotel · Sulawesi Selatan
           </p>
+        </div>
+
+        {/* End logo */}
+        <div
+          className="ft-end-logo-wrap ft-reveal"
+          data-ft-reveal
+          style={{ "--ft-delay": "220ms" }}
+          aria-label="Makassar Golden Hotel logo"
+        >
+          <span className="ft-end-logo-mark">MGH</span>
+          <p className="ft-end-logo-name">Makassar Golden Hotel</p>
         </div>
       </div>
     </footer>

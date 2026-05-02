@@ -4,6 +4,7 @@ import FeaturedRooms from "./FeaturedRooms.jsx";
 import Facilities from "./Facilities.jsx";
 import Location from "./Location.jsx";
 import Testimonials from "./Testimonials.jsx";
+import FinaleInterlude from "./FinaleInterlude.jsx";
 import Footer from "./Footer.jsx";
 import Navbar from "./Navbar.jsx";
 import Cursor from "./Cursor.jsx";
@@ -58,6 +59,7 @@ function App() {
         <Facilities />
         <Location />
         <Testimonials />
+        <FinaleInterlude />
         <Footer />
       </div>
     </div>
