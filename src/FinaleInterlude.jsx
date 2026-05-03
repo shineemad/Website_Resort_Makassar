@@ -1,56 +1,38 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, MapPin, Phone } from "lucide-react";
 
 function FinaleInterlude() {
-  const sectionRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
 
-  useEffect(() => {
-    const nodes = sectionRef.current?.querySelectorAll("[data-fi-reveal]");
-    if (!nodes || nodes.length === 0) return;
-
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduced) {
-      nodes.forEach((n) => n.classList.add("is-visible"));
-      return;
+  const revealMotion = (delay = 0) => {
+    if (prefersReducedMotion) {
+      return {
+        initial: false,
+      };
     }
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
-          io.unobserve(entry.target);
-        });
+    return {
+      initial: { opacity: 0, y: 16 },
+      whileInView: { opacity: 1, y: 0 },
+      viewport: { once: true, amount: 0.28 },
+      transition: {
+        duration: 0.56,
+        ease: [0.22, 1, 0.36, 1],
+        delay,
       },
-      { threshold: 0.2, rootMargin: "0px 0px -8% 0px" },
-    );
-
-    nodes.forEach((n) => io.observe(n));
-    return () => io.disconnect();
-  }, []);
+    };
+  };
 
   return (
     <section
       id="finale-interlude"
-      ref={sectionRef}
       className="relative min-h-screen overflow-hidden"
       style={{ backgroundColor: "#1F1007" }}
     >
       <style>{`
         .fi-reveal {
-          opacity: 0;
-          transform: translate3d(0, 18px, 0) scale(0.992);
-          transition:
-            opacity 760ms cubic-bezier(0.22, 1, 0.36, 1),
-            transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
-          transition-delay: var(--fi-delay, 0ms);
-        }
-
-        .fi-reveal.is-visible {
-          opacity: 1;
-          transform: none;
+          will-change: transform, opacity;
         }
 
         .fi-top-divider,
@@ -189,37 +171,32 @@ function FinaleInterlude() {
       <div className="relative z-10 flex min-h-screen items-end py-12 sm:py-14 lg:py-16">
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-12">
           <article className="max-w-3xl py-2 sm:py-4">
-            <h2
+            <motion.h2
               className="fi-reveal mt-2 max-w-[14ch] text-4xl sm:text-5xl lg:text-[58px]"
-              data-fi-reveal
               style={{
-                "--fi-delay": "120ms",
                 color: "#FCF9F6",
                 fontFamily: '"Instrument Serif", serif',
                 fontWeight: 200,
                 lineHeight: 0.95,
                 letterSpacing: "-0.025em",
               }}
+              {...revealMotion(0.1)}
             >
               Tinggalkan Kota dengan Senja Terbaiknya.
-            </h2>
+            </motion.h2>
 
-            <p
+            <motion.p
               className="fi-reveal fi-copy mt-5 max-w-[56ch]"
-              data-fi-reveal
-              style={{
-                "--fi-delay": "180ms",
-              }}
+              {...revealMotion(0.18)}
             >
               Jadikan penutup perjalanan Anda lebih berkesan dengan pemandangan
               laut, ritme kota tua, dan kenyamanan heritage yang hanya dimiliki
               Makassar Golden Hotel.
-            </p>
+            </motion.p>
 
-            <div
+            <motion.div
               className="fi-reveal mt-8 flex flex-wrap items-center gap-3"
-              data-fi-reveal
-              style={{ "--fi-delay": "240ms" }}
+              {...revealMotion(0.24)}
             >
               <a href="tel:+62411313737" className="fi-cta" data-cursor="view">
                 <Phone size={13} strokeWidth={1.8} />
@@ -230,12 +207,11 @@ function FinaleInterlude() {
               <a href="#featured-rooms" className="fi-note-link">
                 Lihat Detail Kamar
               </a>
-            </div>
+            </motion.div>
 
-            <div
+            <motion.div
               className="fi-reveal mt-8 flex items-center gap-2"
-              data-fi-reveal
-              style={{ "--fi-delay": "280ms" }}
+              {...revealMotion(0.3)}
             >
               <MapPin
                 size={14}
@@ -254,7 +230,7 @@ function FinaleInterlude() {
               >
                 Pantai Losari · Makassar
               </p>
-            </div>
+            </motion.div>
           </article>
         </div>
       </div>

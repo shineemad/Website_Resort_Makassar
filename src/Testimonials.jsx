@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Star } from "lucide-react";
 
 const reviews = [
@@ -125,29 +126,55 @@ function ReviewCard({ review, isGhost = false }) {
 }
 
 function Testimonials() {
+  const prefersReducedMotion = useReducedMotion();
+  const sectionRef = useRef(null);
+  const [marqueeActive, setMarqueeActive] = useState(false);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    const node = sectionRef.current;
+    if (!node) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        setMarqueeActive(entry.isIntersecting);
+      },
+      { root: null, rootMargin: "220px 0px 220px 0px", threshold: 0.01 },
+    );
+
+    io.observe(node);
+    return () => io.disconnect();
+  }, [prefersReducedMotion]);
+
+  const revealMotion = (delay = 0) => {
+    if (prefersReducedMotion) {
+      return {
+        initial: false,
+      };
+    }
+
+    return {
+      initial: { opacity: 0, y: 16 },
+      whileInView: { opacity: 1, y: 0 },
+      viewport: { once: true, amount: 0.2 },
+      transition: {
+        duration: 0.56,
+        ease: [0.22, 1, 0.36, 1],
+        delay,
+      },
+    };
+  };
+
   return (
     <section
       id="testimonials"
+      ref={sectionRef}
       className="relative py-16 lg:py-24"
       style={{ backgroundColor: "#241208" }}
     >
       <style>{`
         .tm6-reveal {
-          opacity: 0;
-          transform: translate3d(0, 16px, 0) scale(0.992);
-          animation: tm6FadeUp 820ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        .tm6-reveal.tm6-head {
-          animation-delay: 90ms;
-        }
-
-        .tm6-reveal.tm6-sub {
-          animation-delay: 170ms;
-        }
-
-        .tm6-reveal.tm6-stage {
-          animation-delay: 240ms;
+          will-change: transform, opacity;
         }
 
         .tm6-marquee {
@@ -183,14 +210,17 @@ function Testimonials() {
           gap: 1rem;
           padding: 1rem;
           will-change: transform;
+          animation-play-state: paused;
         }
 
-        .tm6-top .tm6-track {
+        .tm6-marquee.is-running.tm6-top .tm6-track {
           animation: tm6MoveLeft 38s linear infinite;
+          animation-play-state: running;
         }
 
-        .tm6-bottom .tm6-track {
+        .tm6-marquee.is-running.tm6-bottom .tm6-track {
           animation: tm6MoveRight 44s linear infinite;
+          animation-play-state: running;
         }
 
         .tm6-marquee:hover .tm6-track,
@@ -224,26 +254,12 @@ function Testimonials() {
           to { transform: translateX(0); }
         }
 
-        @keyframes tm6FadeUp {
-          to {
-            opacity: 1;
-            transform: translate3d(0, 0, 0) scale(1);
-          }
-        }
-
         @media (max-width: 767px) {
           .tm6-top .tm6-track { animation-duration: 28s; }
           .tm6-bottom .tm6-track { animation-duration: 32s; }
-          .tm6-reveal { animation-duration: 560ms; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .tm6-reveal {
-            animation: none;
-            opacity: 1;
-            transform: none;
-          }
-
           .tm6-track {
             animation: none !important;
             overflow-x: auto;
@@ -268,19 +284,20 @@ function Testimonials() {
 
       <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-12">
         <div className="mx-auto max-w-3xl text-center relative z-10">
-          <p
-            className="tm6-reveal tm6-head text-xs font-semibold uppercase tracking-[1.2px]"
+          <motion.p
+            className="tm6-reveal text-xs font-semibold uppercase tracking-[1.2px]"
             style={{
               color: "#F47C59",
               fontFamily: '"Inter", sans-serif',
               lineHeight: "16px",
             }}
+            {...revealMotion(0.06)}
           >
             Kata Mereka
-          </p>
+          </motion.p>
 
-          <h2
-            className="tm6-reveal tm6-head mt-3 text-4xl sm:text-5xl lg:text-[58px]"
+          <motion.h2
+            className="tm6-reveal mt-3 text-4xl sm:text-5xl lg:text-[58px]"
             style={{
               color: "#FCF9F6",
               fontFamily: '"Instrument Serif", serif',
@@ -288,12 +305,13 @@ function Testimonials() {
               lineHeight: 0.95,
               letterSpacing: "-0.025em",
             }}
+            {...revealMotion(0.12)}
           >
             Stories In Motion, Not Just Testimonials.
-          </h2>
+          </motion.h2>
 
-          <p
-            className="tm6-reveal tm6-sub mx-auto mt-5 max-w-2xl"
+          <motion.p
+            className="tm6-reveal mx-auto mt-5 max-w-2xl"
             style={{
               color: "rgba(252,249,246,0.74)",
               fontFamily: '"Inter", sans-serif',
@@ -302,15 +320,21 @@ function Testimonials() {
               lineHeight: "20px",
               letterSpacing: "-0.025em",
             }}
+            {...revealMotion(0.18)}
           >
             Dua lane bergerak ini menampilkan ritme pengalaman tamu yang terus
             mengalir. Hover untuk memperlambat dan baca tiap cerita lebih dalam.
-          </p>
+          </motion.p>
         </div>
       </div>
 
-      <div className="tm6-reveal tm6-stage relative z-10 mt-12 space-y-4">
-        <div className="tm6-marquee tm6-top">
+      <motion.div
+        className="tm6-reveal relative z-10 mt-12 space-y-4"
+        {...revealMotion(0.24)}
+      >
+        <div
+          className={`tm6-marquee tm6-top${marqueeActive ? " is-running" : ""}`}
+        >
           <div className="tm6-track">
             {topLaneReviews.map((review, index) => (
               <ReviewCard
@@ -322,7 +346,9 @@ function Testimonials() {
           </div>
         </div>
 
-        <div className="tm6-marquee tm6-bottom">
+        <div
+          className={`tm6-marquee tm6-bottom${marqueeActive ? " is-running" : ""}`}
+        >
           <div className="tm6-track">
             {bottomLaneReviews.map((review, index) => (
               <ReviewCard
@@ -333,7 +359,7 @@ function Testimonials() {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

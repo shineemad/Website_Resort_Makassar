@@ -11,6 +11,7 @@ function Cursor() {
   const dotRef = useRef(null);
   const ringRef = useRef(null);
   const labelRef = useRef(null);
+  const rafRef = useRef(null);
 
   useEffect(() => {
     // Only on fine-pointer (mouse) devices
@@ -33,17 +34,38 @@ function Cursor() {
     let rafId = null;
     let visible = false;
     let currentState = "default"; // "default" | "hover" | "view"
+    let dotScale = 1;
 
     const lerp = (a, b, t) => a + (b - a) * t;
 
     const animate = () => {
+      if (!visible) {
+        rafId = null;
+        rafRef.current = null;
+        return;
+      }
+
       ringX = lerp(ringX, dotX, 0.11);
       ringY = lerp(ringY, dotY, 0.11);
 
-      dot.style.transform = `translate(${dotX}px, ${dotY}px) translate(-50%, -50%)`;
+      dot.style.transform = `translate(${dotX}px, ${dotY}px) translate(-50%, -50%) scale(${dotScale})`;
       ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
 
       rafId = requestAnimationFrame(animate);
+      rafRef.current = rafId;
+    };
+
+    const startAnimation = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(animate);
+      rafRef.current = rafId;
+    };
+
+    const stopAnimation = () => {
+      if (rafId === null) return;
+      cancelAnimationFrame(rafId);
+      rafId = null;
+      rafRef.current = null;
     };
 
     const show = () => {
@@ -65,14 +87,15 @@ function Cursor() {
         ring.style.height = "50px";
         ring.style.borderColor = "rgba(244,124,89,0.85)";
         ring.style.backgroundColor = "rgba(244,124,89,0.10)";
+        dotScale = 0.5;
         dot.style.opacity = "0.4";
-        dot.style.transform += " scale(0.5)";
         if (label) label.style.opacity = "0";
       } else if (state === "view") {
         ring.style.width = "68px";
         ring.style.height = "68px";
         ring.style.borderColor = "transparent";
         ring.style.backgroundColor = "rgba(244,124,89,0.90)";
+        dotScale = 1;
         dot.style.opacity = "0";
         if (label) label.style.opacity = "1";
       } else {
@@ -81,6 +104,7 @@ function Cursor() {
         ring.style.height = "32px";
         ring.style.borderColor = "rgba(244,124,89,0.60)";
         ring.style.backgroundColor = "transparent";
+        dotScale = 1;
         dot.style.opacity = visible ? "1" : "0";
         if (label) label.style.opacity = "0";
       }
@@ -96,16 +120,30 @@ function Cursor() {
         ringX = dotX;
         ringY = dotY;
         show();
-        if (!rafId) rafId = requestAnimationFrame(animate);
+        startAnimation();
+      } else {
+        startAnimation();
       }
     };
 
     const onMouseLeave = () => {
       visible = false;
       hide();
+      stopAnimation();
     };
     const onMouseEnter = () => {
-      if (visible) show();
+      if (visible) {
+        show();
+        startAnimation();
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        stopAnimation();
+        return;
+      }
+      if (visible) startAnimation();
     };
 
     // Delegated hover detection
@@ -138,6 +176,7 @@ function Cursor() {
     document.addEventListener("mouseenter", onMouseEnter);
     document.addEventListener("mouseover", onMouseOver);
     document.addEventListener("mouseout", onMouseOut);
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       document.body.style.cursor = "";
@@ -146,7 +185,10 @@ function Cursor() {
       document.removeEventListener("mouseenter", onMouseEnter);
       document.removeEventListener("mouseover", onMouseOver);
       document.removeEventListener("mouseout", onMouseOut);
-      if (rafId) cancelAnimationFrame(rafId);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
   }, []);
 

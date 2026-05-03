@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { MapPin, Phone, Mail } from "lucide-react";
 
 const navLinks = [
@@ -19,57 +20,40 @@ const contactItems = [
 ];
 
 function Footer() {
-  const sectionRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
 
-  useEffect(() => {
-    const revealNodes =
-      sectionRef.current?.querySelectorAll("[data-ft-reveal]");
-    if (!revealNodes || revealNodes.length === 0) return;
-
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
+  const revealMotion = (delay = 0) => {
     if (prefersReducedMotion) {
-      revealNodes.forEach((node) => node.classList.add("is-visible"));
-      return;
+      return {
+        initial: false,
+      };
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        });
+    return {
+      initial: { opacity: 0, y: 14 },
+      whileInView: { opacity: 1, y: 0 },
+      viewport: { once: true, amount: 0.24 },
+      transition: {
+        duration: 0.52,
+        ease: [0.22, 1, 0.36, 1],
+        delay,
       },
-      { threshold: 0.14, rootMargin: "0px 0px -6% 0px" },
-    );
-
-    revealNodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
-  }, []);
+    };
+  };
 
   return (
     <footer
       id="footer"
-      ref={sectionRef}
       className="relative overflow-hidden"
       style={{ backgroundColor: "#FCF9F6" }}
     >
       <style>{`
         .ft-reveal {
-          opacity: 0;
-          transform: translate3d(0, 14px, 0) scale(0.993);
-          transition:
-            opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
-            transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
-          transition-delay: var(--ft-delay, 0ms);
+          will-change: transform, opacity;
         }
 
-        .ft-reveal.is-visible {
-          opacity: 1;
-          transform: none;
+        .ft-end-logo-wrap {
+          will-change: auto;
         }
 
         .ft-hairline {
@@ -213,10 +197,9 @@ function Footer() {
         <div className="ft-hairline" aria-hidden="true" />
 
         {/* Brand statement */}
-        <div
+        <motion.div
           className="ft-reveal pb-10 pt-12 lg:pb-12 lg:pt-14"
-          data-ft-reveal
-          style={{ "--ft-delay": "70ms" }}
+          {...revealMotion(0.08)}
         >
           <p
             className="text-xs uppercase tracking-[1.2px]"
@@ -251,16 +234,12 @@ function Footer() {
             Makassar Golden Hotel merangkum kehangatan heritage, ritme pesisir,
             dan kenyamanan modern dalam satu alamat yang selalu kembali dicari.
           </p>
-        </div>
+        </motion.div>
 
         {/* Triptych grid */}
         <div className="ft-gridline grid grid-cols-1 gap-8 py-10 lg:grid-cols-[1.2fr_0.9fr] lg:gap-10 lg:py-12">
           {/* Column 1 - utility note */}
-          <div
-            className="ft-reveal"
-            data-ft-reveal
-            style={{ "--ft-delay": "110ms" }}
-          >
+          <motion.div className="ft-reveal" {...revealMotion(0.14)}>
             <p
               className="mb-4 text-xs uppercase tracking-[1.2px]"
               style={{
@@ -303,13 +282,12 @@ function Footer() {
                 Hubungi Front Desk
               </a>
             </div>
-          </div>
+          </motion.div>
 
           {/* Column 2 - navigation + contact */}
-          <div
+          <motion.div
             className="grid grid-cols-1 gap-10 ft-reveal"
-            data-ft-reveal
-            style={{ "--ft-delay": "150ms" }}
+            {...revealMotion(0.2)}
           >
             {/* Navigation */}
             <div>
@@ -378,16 +356,15 @@ function Footer() {
                 ))}
               </ul>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         <hr className="ft-divider" />
 
         {/* Bottom bar */}
-        <div
+        <motion.div
           className="ft-reveal flex flex-wrap items-center justify-between gap-4 py-5"
-          data-ft-reveal
-          style={{ "--ft-delay": "180ms" }}
+          {...revealMotion(0.24)}
         >
           <p
             style={{
@@ -414,13 +391,11 @@ function Footer() {
           >
             Heritage Hotel · Sulawesi Selatan
           </p>
-        </div>
+        </motion.div>
 
         {/* End logo */}
         <div
           className="ft-end-logo-wrap ft-reveal"
-          data-ft-reveal
-          style={{ "--ft-delay": "220ms" }}
           aria-label="Makassar Golden Hotel logo"
         >
           <span className="ft-end-logo-mark">MGH</span>
