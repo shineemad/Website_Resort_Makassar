@@ -260,6 +260,7 @@ function FeaturedRooms() {
     if (!scroller) return undefined;
 
     let frameId = 0;
+    let settleFrames = 0;
 
     const updateActiveCard = () => {
       frameId = 0;
@@ -311,9 +312,15 @@ function FeaturedRooms() {
       });
 
       setActiveCard((prev) => (prev === closestIndex ? prev : closestIndex));
+
+      if (settleFrames > 0) {
+        settleFrames -= 1;
+        frameId = window.requestAnimationFrame(updateActiveCard);
+      }
     };
 
     const onScroll = () => {
+      settleFrames = 8;
       if (frameId) return;
       frameId = window.requestAnimationFrame(updateActiveCard);
     };
@@ -343,8 +350,16 @@ function FeaturedRooms() {
       snapTimer = window.setTimeout(() => {
         if (dragRef.current.isPointerDown) return;
         const closestIndex = getClosestCardIndex();
+        const targetCard = cardRefs.current[closestIndex];
+        if (!targetCard) return;
+
+        const targetLeft =
+          targetCard.offsetLeft -
+          (scroller.clientWidth - targetCard.clientWidth) / 2;
+
+        if (Math.abs(scroller.scrollLeft - targetLeft) < 2) return;
         scrollToCard(closestIndex);
-      }, 180);
+      }, 280);
     };
 
     scroller.addEventListener("scroll", scheduleSnapToClosestCard, {
@@ -440,7 +455,6 @@ function FeaturedRooms() {
         .rooms-scroller {
           scrollbar-width: none;
           -ms-overflow-style: none;
-          scroll-behavior: smooth;
           perspective: 1400px;
           scroll-padding-left: clamp(24px, 4vw, 48px);
           scroll-padding-right: clamp(24px, 4vw, 48px);
@@ -459,7 +473,6 @@ function FeaturedRooms() {
 
         .rooms-panel {
           transition:
-            transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
             box-shadow 420ms cubic-bezier(0.22, 1, 0.36, 1),
             border-color 300ms ease,
             opacity 380ms ease,
