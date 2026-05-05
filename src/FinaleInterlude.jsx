@@ -28,7 +28,7 @@ function FinaleInterlude() {
     <section
       id="finale-interlude"
       className="relative min-h-screen overflow-hidden"
-      style={{ backgroundColor: "#1F1007" }}
+      style={{ backgroundColor: "#FCF9F6" }}
     >
       <style>{`
         .fi-reveal {
@@ -66,7 +66,7 @@ function FinaleInterlude() {
         }
 
         .fi-copy {
-          color: rgba(252,249,246,0.9);
+          color: rgba(36,18,8,0.9);
           font-family: "Inter", sans-serif;
           font-size: 14px;
           line-height: 20px;
@@ -104,7 +104,7 @@ function FinaleInterlude() {
           line-height: 16px;
           letter-spacing: 1.2px;
           text-transform: uppercase;
-          color: rgba(252, 249, 246, 0.64);
+          color: rgba(36, 18, 8, 0.64);
           transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
           text-decoration: none;
         }
@@ -174,7 +174,7 @@ function FinaleInterlude() {
             <motion.h2
               className="fi-reveal mt-2 max-w-[14ch] text-4xl sm:text-5xl lg:text-[58px]"
               style={{
-                color: "#FCF9F6",
+                color: "#241208",
                 fontFamily: '"Instrument Serif", serif',
                 fontWeight: 200,
                 lineHeight: 0.95,
@@ -220,7 +220,7 @@ function FinaleInterlude() {
               />
               <p
                 style={{
-                  color: "rgba(252,249,246,0.86)",
+                  color: "rgba(36,18,8,0.86)",
                   fontFamily: '"Inter", sans-serif',
                   fontSize: "12px",
                   lineHeight: "16px",

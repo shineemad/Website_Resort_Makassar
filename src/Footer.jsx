@@ -45,7 +45,7 @@ function Footer() {
     <footer
       id="footer"
       className="relative overflow-hidden"
-      style={{ backgroundColor: "#FCF9F6" }}
+      style={{ backgroundColor: "#241208" }}
     >
       <style>{`
         .ft-reveal {
@@ -57,12 +57,12 @@ function Footer() {
         }
 
         .ft-hairline {
-          border-top: 0.8px solid rgba(36, 18, 8, 0.2);
+          border-top: 0.8px solid rgba(252, 249, 246, 0.2);
         }
 
         .ft-gridline {
-          border-top: 0.8px solid rgba(36, 18, 8, 0.14);
-          border-bottom: 0.8px solid rgba(36, 18, 8, 0.14);
+          border-top: 0.8px solid rgba(252, 249, 246, 0.14);
+          border-bottom: 0.8px solid rgba(252, 249, 246, 0.14);
         }
 
         .ft-nav-link {
@@ -98,7 +98,7 @@ function Footer() {
         }
 
         .ft-note-link {
-          color: rgba(36, 18, 8, 0.66);
+          color: rgba(252, 249, 246, 0.66);
           transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
           text-decoration: none;
         }
@@ -109,12 +109,12 @@ function Footer() {
 
         .ft-divider {
           border: none;
-          border-top: 0.8px solid rgba(36, 18, 8, 0.2);
+          border-top: 0.8px solid rgba(252, 249, 246, 0.2);
           margin: 0;
         }
 
         .ft-end-logo-wrap {
-          border-top: 0.8px solid rgba(36, 18, 8, 0.14);
+          border-top: 0.8px solid rgba(252, 249, 246, 0.14);
           padding-top: 20px;
           padding-bottom: 26px;
         }
@@ -126,7 +126,7 @@ function Footer() {
           font-size: clamp(64px, 15vw, 196px);
           line-height: 0.84;
           letter-spacing: -0.04em;
-          color: rgba(36, 18, 8, 0.92);
+          color: rgba(252, 249, 246, 0.92);
           text-align: center;
           user-select: none;
         }
@@ -139,7 +139,7 @@ function Footer() {
           line-height: 16px;
           letter-spacing: 1.8px;
           text-transform: uppercase;
-          color: rgba(36, 18, 8, 0.56);
+          color: rgba(252, 249, 246, 0.56);
         }
 
         @media (max-width: 767px) {
@@ -177,7 +177,7 @@ function Footer() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(56% 44% at 10% 8%, rgba(244,124,89,0.2), transparent 72%), radial-gradient(40% 36% at 90% 88%, rgba(36,18,8,0.08), transparent 72%), linear-gradient(180deg, rgba(252,249,246,1) 0%, rgba(252,249,246,1) 100%)",
+            "radial-gradient(56% 44% at 10% 8%, rgba(244,124,89,0.2), transparent 72%), radial-gradient(40% 36% at 90% 88%, rgba(252,249,246,0.08), transparent 72%), linear-gradient(180deg, rgba(36,18,8,1) 0%, rgba(36,18,8,1) 100%)",
         }}
       />
 
@@ -211,7 +211,7 @@ function Footer() {
           <h2
             className="mt-4 max-w-[18ch] text-4xl sm:text-5xl lg:text-[56px]"
             style={{
-              color: "#241208",
+              color: "#FCF9F6",
               fontFamily: '"Instrument Serif", serif',
               fontWeight: 200,
               lineHeight: 0.94,
@@ -224,7 +224,7 @@ function Footer() {
           <p
             className="mt-5 max-w-[64ch]"
             style={{
-              color: "rgba(36,18,8,0.72)",
+              color: "rgba(252,249,246,0.72)",
               fontFamily: '"Inter", sans-serif',
               fontSize: "14px",
               lineHeight: "20px",
@@ -243,7 +243,7 @@ function Footer() {
             <p
               className="mb-4 text-xs uppercase tracking-[1.2px]"
               style={{
-                color: "rgba(36,18,8,0.6)",
+                color: "rgba(252,249,246,0.6)",
                 fontFamily: '"Inter", sans-serif',
               }}
             >
@@ -253,7 +253,7 @@ function Footer() {
             <p
               className="max-w-[42ch]"
               style={{
-                color: "rgba(36,18,8,0.82)",
+                color: "rgba(252,249,246,0.82)",
                 fontFamily: '"Inter", sans-serif',
                 fontSize: "14px",
                 lineHeight: "20px",
@@ -294,7 +294,7 @@ function Footer() {
               <p
                 className="mb-4 text-xs uppercase tracking-[1.2px]"
                 style={{
-                  color: "rgba(36,18,8,0.6)",
+                  color: "rgba(252,249,246,0.6)",
                   fontFamily: '"Inter", sans-serif',
                 }}
               >
@@ -318,7 +318,7 @@ function Footer() {
               <p
                 className="mb-4 text-xs uppercase tracking-[1.2px]"
                 style={{
-                  color: "rgba(36,18,8,0.6)",
+                  color: "rgba(252,249,246,0.6)",
                   fontFamily: '"Inter", sans-serif',
                 }}
               >
@@ -330,7 +330,7 @@ function Footer() {
                     <span
                       className="mt-[2px] inline-flex h-6 w-6 shrink-0 items-center justify-center"
                       style={{
-                        border: "0.8px solid rgba(36,18,8,0.2)",
+                        border: "0.8px solid rgba(252,249,246,0.2)",
                         borderRadius: "2px",
                         backgroundColor: "rgba(244,124,89,0.12)",
                       }}
@@ -343,7 +343,7 @@ function Footer() {
                     </span>
                     <p
                       style={{
-                        color: "rgba(36,18,8,0.82)",
+                        color: "rgba(252,249,246,0.82)",
                         fontFamily: '"Inter", sans-serif',
                         fontSize: "13px",
                         lineHeight: "20px",
@@ -368,7 +368,7 @@ function Footer() {
         >
           <p
             style={{
-              color: "rgba(36,18,8,0.62)",
+              color: "rgba(252,249,246,0.62)",
               fontFamily: '"Inter", sans-serif',
               fontSize: "12px",
               lineHeight: "16px",
@@ -381,7 +381,7 @@ function Footer() {
 
           <p
             style={{
-              color: "rgba(36,18,8,0.56)",
+              color: "rgba(252,249,246,0.56)",
               fontFamily: '"Inter", sans-serif',
               fontSize: "11px",
               lineHeight: "16px",
