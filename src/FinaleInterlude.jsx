@@ -53,7 +53,7 @@ function FinaleInterlude() {
         .fi-bottom-divider {
           bottom: 0;
           background:
-            linear-gradient(to right, transparent 0%, rgba(252,249,246,0.2) 26%, rgba(252,249,246,0.46) 50%, rgba(252,249,246,0.2) 74%, transparent 100%);
+            linear-gradient(to right, transparent 0%, rgba(36,18,8,0.08) 26%, rgba(36,18,8,0.18) 50%, rgba(36,18,8,0.08) 74%, transparent 100%);
         }
 
         .fi-eyebrow {
@@ -66,7 +66,7 @@ function FinaleInterlude() {
         }
 
         .fi-copy {
-          color: rgba(36,18,8,0.9);
+          color: rgba(36,18,8,0.82);
           font-family: "Inter", sans-serif;
           font-size: 14px;
           line-height: 20px;
@@ -78,8 +78,8 @@ function FinaleInterlude() {
           align-items: center;
           gap: 8px;
           background-color: #F47C59;
-          color: #FCF9F6;
-          border: none;
+          color: #241208;
+          border: 0.8px solid rgba(36,18,8,0.26);
           border-radius: 0;
           padding: 12px 16px;
           font-family: "Inter", sans-serif;
@@ -90,11 +90,15 @@ function FinaleInterlude() {
           text-decoration: none;
           transition:
             background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+            color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+            border-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
             transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .fi-cta:hover {
-          background-color: rgba(244, 124, 89, 0.84);
+          background-color: #241208;
+          color: #FCF9F6;
+          border-color: rgba(36,18,8,0.92);
           transform: translateY(-1px);
         }
 
@@ -104,13 +108,13 @@ function FinaleInterlude() {
           line-height: 16px;
           letter-spacing: 1.2px;
           text-transform: uppercase;
-          color: rgba(36, 18, 8, 0.64);
+          color: rgba(36,18,8,0.72);
           transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
           text-decoration: none;
         }
 
         .fi-note-link:hover {
-          color: #F47C59;
+          color: #241208;
         }
 
         @media (max-width: 767px) {
@@ -135,18 +139,12 @@ function FinaleInterlude() {
 
       <div aria-hidden="true" className="fi-top-divider" />
 
-      <img
-        src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=2600&q=82"
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover"
-      />
-
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(112deg, rgba(20,10,5,0.74) 0%, rgba(36,18,8,0.38) 42%, rgba(20,10,5,0.8) 100%), linear-gradient(to top, rgba(20,10,5,0.84) 0%, rgba(20,10,5,0.08) 44%, rgba(20,10,5,0.62) 100%)",
+            "linear-gradient(112deg, rgba(252,249,246,0.94) 0%, rgba(249,241,234,0.82) 46%, rgba(252,249,246,0.94) 100%)",
         }}
       />
 
@@ -155,7 +153,7 @@ function FinaleInterlude() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(58% 42% at 12% 12%, rgba(244,124,89,0.28), transparent 72%), radial-gradient(38% 30% at 88% 86%, rgba(252,249,246,0.14), transparent 74%)",
+            "radial-gradient(58% 42% at 12% 12%, rgba(244,124,89,0.2), transparent 72%), radial-gradient(38% 30% at 88% 86%, rgba(36,18,8,0.08), transparent 74%)",
         }}
       />
 
@@ -164,7 +162,7 @@ function FinaleInterlude() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(36,18,8,0.7) 0%, transparent 18%, transparent 82%, rgba(36,18,8,0.88) 100%)",
+            "linear-gradient(to bottom, rgba(36,18,8,0.08) 0%, transparent 18%, transparent 82%, rgba(36,18,8,0.12) 100%)",
         }}
       />
 
@@ -220,7 +218,7 @@ function FinaleInterlude() {
               />
               <p
                 style={{
-                  color: "rgba(36,18,8,0.86)",
+                  color: "rgba(36,18,8,0.72)",
                   fontFamily: '"Inter", sans-serif',
                   fontSize: "12px",
                   lineHeight: "16px",
@@ -234,7 +232,6 @@ function FinaleInterlude() {
           </article>
         </div>
       </div>
-      <p></p>
 
       <div aria-hidden="true" className="fi-bottom-divider" />
     </section>
