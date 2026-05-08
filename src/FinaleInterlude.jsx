@@ -20,12 +20,14 @@ function FinaleInterlude() {
 
   /* ── Cursor follower state ── */
   const imgRef = useRef(null);
+  const glowFollowRef = useRef(null);
   const turbulenceRef = useRef(null);
   const displacementRef = useRef(null);
   const glintRef = useRef(null);
   const rippleLayerRef = useRef(null);
   const sectionRef = useRef(null);
   const articleRef = useRef(null);
+  const bgGlowRef = useRef(null);
   const imgIndexRef = useRef(0);
   const [imgIndex, setImgIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
@@ -37,21 +39,55 @@ function FinaleInterlude() {
 
     const section = sectionRef.current;
     const img = imgRef.current;
+    const bgGlow = bgGlowRef.current;
+    const glowFollow = glowFollowRef.current;
     const turbulence = turbulenceRef.current;
     const displacement = displacementRef.current;
     const glint = glintRef.current;
-    if (!section || !img || !turbulence || !displacement || !glint) return;
+    if (
+      !section ||
+      !img ||
+      !bgGlow ||
+      !glowFollow ||
+      !turbulence ||
+      !displacement ||
+      !glint
+    )
+      return;
 
     let wasOutside = false;
     let lastPointer = { x: 0, y: 0 };
     let velocity = { x: 0, y: 0 };
     let lastRippleAt = 0;
+    let idleTimer = null;
+
+    const toLocalPoint = (clientX, clientY) => {
+      const rect = section.getBoundingClientRect();
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top,
+      };
+    };
 
     gsap.set(img, {
       xPercent: -50,
       yPercent: -50,
       scale: 0.82,
       rotate: 0,
+      force3D: true,
+    });
+    gsap.set(bgGlow, {
+      xPercent: -50,
+      yPercent: -50,
+      opacity: 0,
+      scale: 0.86,
+      force3D: true,
+    });
+    gsap.set(glowFollow, {
+      xPercent: -50,
+      yPercent: -50,
+      opacity: 0,
+      scale: 0.7,
       force3D: true,
     });
     gsap.set(glint, { opacity: 0, xPercent: -62, yPercent: 0, scaleX: 0.9 });
@@ -72,47 +108,82 @@ function FinaleInterlude() {
       duration: 0.36,
       ease: "power3.out",
     });
+    const glowXTo = gsap.quickTo(glowFollow, "x", {
+      duration: 0.4,
+      ease: "power3.out",
+    });
+    const glowYTo = gsap.quickTo(glowFollow, "y", {
+      duration: 0.4,
+      ease: "power3.out",
+    });
+    const glowScaleTo = gsap.quickTo(glowFollow, "scale", {
+      duration: 0.44,
+      ease: "power3.out",
+    });
+    const bgGlowXTo = gsap.quickTo(bgGlow, "x", {
+      duration: 0.78,
+      ease: "power2.out",
+    });
+    const bgGlowYTo = gsap.quickTo(bgGlow, "y", {
+      duration: 0.78,
+      ease: "power2.out",
+    });
 
     const spawnRipple = (x, y, strength = 1) => {
       const layer = rippleLayerRef.current;
       if (!layer) return;
-
-      const ripple = document.createElement("span");
-      ripple.className = "fi-water-ripple";
-      ripple.style.left = `${x}px`;
-      ripple.style.top = `${y}px`;
-      layer.appendChild(ripple);
-
-      const baseSize = 34 + Math.random() * 34;
-      const size = baseSize + strength * 28;
-
-      gsap.fromTo(
-        ripple,
-        {
-          xPercent: -50,
-          yPercent: -50,
-          width: 8,
-          height: 8,
-          opacity: 0.42,
-          scale: 0.24,
-        },
-        {
-          width: size,
-          height: size,
-          opacity: 0,
-          scale: 1,
-          duration: 0.92,
-          ease: "power2.out",
-          onComplete: () => {
-            ripple.remove();
+      const ringCount = strength > 0.8 ? 3 : strength > 0.28 ? 2 : 1;
+      for (let i = 0; i < ringCount; i++) {
+        const ripple = document.createElement("span");
+        ripple.className = "fi-water-ripple";
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        layer.appendChild(ripple);
+        const baseSize = 58 + Math.random() * 48 + i * 52;
+        const size = baseSize + strength * 56;
+        gsap.fromTo(
+          ripple,
+          {
+            xPercent: -50,
+            yPercent: -50,
+            width: 6,
+            height: 6,
+            opacity: 0.76 - i * 0.18,
+            scale: 0.14,
           },
-        },
-      );
+          {
+            width: size,
+            height: size,
+            opacity: 0,
+            scale: 1,
+            duration: 1.18 + i * 0.34,
+            delay: i * 0.16,
+            ease: "power2.out",
+            onComplete: () => {
+              ripple.remove();
+            },
+          },
+        );
+      }
+    };
+
+    const startIdleRipples = () => {
+      clearInterval(idleTimer);
+      idleTimer = setInterval(() => {
+        const x = section.offsetWidth * (0.1 + Math.random() * 0.8);
+        const y = section.offsetHeight * (0.1 + Math.random() * 0.8);
+        spawnRipple(x, y, 0.22);
+      }, 2800);
+    };
+
+    const stopIdleRipples = () => {
+      clearInterval(idleTimer);
+      idleTimer = null;
     };
 
     const triggerShimmer = (strength = 1) => {
       const bump = gsap.utils.clamp(0, 1.45, strength);
-      const shimmerScale = 10 + bump * 24;
+      const shimmerScale = 18 + bump * 48;
       const freqX = (0.009 + bump * 0.01).toFixed(4);
       const freqY = (0.013 + bump * 0.012).toFixed(4);
 
@@ -173,7 +244,7 @@ function FinaleInterlude() {
       const article = articleRef.current;
       if (!article) return true;
       const r = article.getBoundingClientRect();
-      const pad = 24;
+      const pad = 40;
       return (
         cx < r.left - pad ||
         cx > r.right + pad ||
@@ -185,10 +256,22 @@ function FinaleInterlude() {
     const onMouseEnter = (e) => {
       lastPointer = { x: e.clientX, y: e.clientY };
       velocity = { x: 0, y: 0 };
+      const local = toLocalPoint(e.clientX, e.clientY);
       xTo(e.clientX);
       yTo(e.clientY);
+      glowXTo(local.x);
+      glowYTo(local.y);
+      bgGlowXTo(local.x);
+      bgGlowYTo(local.y);
+      gsap.to(bgGlow, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.62,
+        ease: "power2.out",
+      });
       rotateTo(0);
       scaleTo(0.84);
+      startIdleRipples();
     };
 
     const onMouseMove = (e) => {
@@ -198,8 +281,13 @@ function FinaleInterlude() {
       };
       lastPointer = { x: e.clientX, y: e.clientY };
 
+      const local = toLocalPoint(e.clientX, e.clientY);
       xTo(e.clientX);
       yTo(e.clientY);
+      glowXTo(local.x);
+      glowYTo(local.y);
+      bgGlowXTo(local.x);
+      bgGlowYTo(local.y);
       rotateTo(gsap.utils.clamp(-12, 12, velocity.x * 0.6));
 
       const outside = isOutsideArticle(e.clientX, e.clientY);
@@ -208,19 +296,32 @@ function FinaleInterlude() {
         setImgIndex(imgIndexRef.current);
         setIsHovering(true);
         scaleTo(1);
-        spawnRipple(e.clientX, e.clientY, 1.2);
+        glowScaleTo(1.02);
+        gsap.to(glowFollow, {
+          opacity: 0.94,
+          duration: 0.34,
+          ease: "power2.out",
+        });
+        spawnRipple(local.x, local.y, 1.2);
         triggerShimmer(0.9);
       } else if (!outside && wasOutside) {
         setIsHovering(false);
         scaleTo(0.84);
         rotateTo(0);
+        glowScaleTo(0.7);
+        gsap.to(glowFollow, {
+          opacity: 0,
+          duration: 0.32,
+          ease: "power2.out",
+        });
       }
 
       if (outside) {
         const speed = Math.hypot(velocity.x, velocity.y);
         const now = performance.now();
-        if (speed > 26 && now - lastRippleAt > 150) {
-          spawnRipple(e.clientX, e.clientY, Math.min(1.35, speed / 42));
+        glowScaleTo(1 + Math.min(0.28, speed / 230));
+        if (speed > 10 && now - lastRippleAt > 80) {
+          spawnRipple(local.x, local.y, Math.min(1.35, speed / 42));
           triggerShimmer(Math.min(1.4, speed / 34));
           lastRippleAt = now;
         }
@@ -231,7 +332,21 @@ function FinaleInterlude() {
     const onMouseLeave = (e) => {
       wasOutside = false;
       setIsHovering(false);
-      spawnRipple(e.clientX, e.clientY, 1.5);
+      stopIdleRipples();
+      gsap.to(bgGlow, {
+        opacity: 0,
+        scale: 0.86,
+        duration: 0.68,
+        ease: "power2.out",
+      });
+      gsap.to(glowFollow, {
+        opacity: 0,
+        scale: 0.68,
+        duration: 0.42,
+        ease: "power2.out",
+      });
+      const local = toLocalPoint(e.clientX, e.clientY);
+      spawnRipple(local.x, local.y, 1.5);
       triggerShimmer(1.05);
 
       gsap.to(img, {
@@ -258,6 +373,7 @@ function FinaleInterlude() {
       section.removeEventListener("mouseenter", onMouseEnter);
       section.removeEventListener("mousemove", onMouseMove);
       section.removeEventListener("mouseleave", onMouseLeave);
+      stopIdleRipples();
       gsap.killTweensOf(img);
       const layer = rippleLayerRef.current;
       if (layer) {
@@ -265,8 +381,10 @@ function FinaleInterlude() {
           node.remove();
         });
       }
-      gsap.killTweensOf([turbulence, displacement, glint]);
+      gsap.killTweensOf([turbulence, displacement, glint, glowFollow, bgGlow]);
       gsap.set(glint, { opacity: 0 });
+      gsap.set(glowFollow, { opacity: 0, scale: 0.68 });
+      gsap.set(bgGlow, { opacity: 0, scale: 0.86 });
       gsap.set(displacement, { attr: { scale: 0 } });
     };
   }, [prefersReducedMotion]);
@@ -468,20 +586,98 @@ function FinaleInterlude() {
           overflow: hidden;
         }
 
+        .fi-hover-glow {
+          position: absolute;
+          pointer-events: none;
+          z-index: 6;
+          width: clamp(220px, 22vw, 360px);
+          aspect-ratio: 1 / 1;
+          border-radius: 999px;
+          background:
+            radial-gradient(circle at 50% 50%, rgba(244,124,89,0.46) 0%, rgba(244,124,89,0.22) 30%, rgba(146,207,242,0.12) 56%, transparent 76%);
+          filter: blur(20px) saturate(1.08);
+          mix-blend-mode: soft-light;
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.7);
+          will-change: transform, opacity;
+        }
+
+        .fi-hover-glow::after {
+          content: "";
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          width: 14px;
+          height: 14px;
+          border-radius: 999px;
+          transform: translate(-50%, -50%);
+          background: rgba(244,124,89,0.46);
+          box-shadow: 0 0 20px rgba(244,124,89,0.4);
+        }
+
+        .fi-bg-glow {
+          position: absolute;
+          pointer-events: none;
+          z-index: 2;
+          width: clamp(560px, 72vw, 920px);
+          aspect-ratio: 1 / 1;
+          border-radius: 999px;
+          background:
+            radial-gradient(
+              circle at 50% 50%,
+              rgba(244,124,89,0.34) 0%,
+              rgba(244,160,80,0.20) 24%,
+              rgba(250,215,140,0.12) 48%,
+              transparent 70%
+            );
+          filter: blur(72px) saturate(1.12);
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.86);
+          will-change: transform, opacity;
+        }
+
+        @media (max-width: 1023px) {
+          .fi-bg-glow { display: none; }
+        }
+
         .fi-water-ripple {
           position: absolute;
           border-radius: 999px;
-          border: 1.4px solid rgba(244,124,89,0.55);
+          border: 2px solid rgba(244,124,89,0.72);
           box-shadow:
-            0 0 0 1px rgba(252,249,246,0.32) inset,
-            0 0 24px rgba(244,124,89,0.18);
-          backdrop-filter: blur(1.5px);
+            0 0 0 1.5px rgba(252,249,246,0.52) inset,
+            0 0 14px rgba(244,124,89,0.40),
+            0 0 40px rgba(244,124,89,0.16);
+          backdrop-filter: blur(0.6px);
           transform: translate(-50%, -50%);
           will-change: width, height, opacity, transform;
         }
 
+        .fi-wave-lines {
+          position: absolute;
+          bottom: 28px;
+          left: 0;
+          right: 0;
+          width: 100%;
+          height: 64px;
+          pointer-events: none;
+          z-index: 4;
+          overflow: visible;
+        }
+        .fi-wl-1 { animation: fi-wave-float 7s ease-in-out infinite; }
+        .fi-wl-2 { animation: fi-wave-float 9s ease-in-out infinite reverse; animation-delay: -2.5s; }
+        .fi-wl-3 { animation: fi-wave-float 11.5s ease-in-out infinite; animation-delay: -5s; }
+        @keyframes fi-wave-float {
+          0%, 100% { transform: translateY(0px); opacity: 1; }
+          50% { transform: translateY(-8px); opacity: 0.68; }
+        }
+        @media (max-width: 767px) {
+          .fi-wave-lines { display: none; }
+        }
+
         @media (max-width: 1023px) {
-          .fi-cursor-img { display: none; }
+          .fi-cursor-img,
+          .fi-hover-glow { display: none; }
         }
 
         @media (max-width: 767px) {
@@ -519,7 +715,7 @@ function FinaleInterlude() {
             ref={turbulenceRef}
             type="fractalNoise"
             baseFrequency="0.0040 0.0070"
-            numOctaves="2"
+            numOctaves="3"
             seed="17"
             result="noise"
           />
@@ -548,6 +744,9 @@ function FinaleInterlude() {
         />
       </div>
 
+      <div ref={glowFollowRef} aria-hidden="true" className="fi-hover-glow" />
+      <div ref={bgGlowRef} aria-hidden="true" className="fi-bg-glow" />
+
       <div aria-hidden="true" className="fi-top-divider" />
       <div
         ref={rippleLayerRef}
@@ -555,30 +754,14 @@ function FinaleInterlude() {
         className="fi-ripple-layer"
       />
 
+      {/* Subtle edge vignette — kept for depth */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(112deg, rgba(252,249,246,0.94) 0%, rgba(249,241,234,0.82) 46%, rgba(252,249,246,0.94) 100%)",
-        }}
-      />
-
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(54% 44% at 50% 50%, rgba(244,124,89,0.14), transparent 72%), radial-gradient(38% 30% at 88% 86%, rgba(36,18,8,0.06), transparent 74%)",
-        }}
-      />
-
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(36,18,8,0.08) 0%, transparent 18%, transparent 82%, rgba(36,18,8,0.12) 100%)",
+            "linear-gradient(to bottom, rgba(36,18,8,0.06) 0%, transparent 16%, transparent 84%, rgba(36,18,8,0.10) 100%)",
+          zIndex: 3,
         }}
       />
 
@@ -657,6 +840,35 @@ function FinaleInterlude() {
           </article>
         </div>
       </div>
+
+      <svg
+        aria-hidden="true"
+        className="fi-wave-lines"
+        viewBox="0 0 1440 64"
+        preserveAspectRatio="none"
+      >
+        <path
+          className="fi-wl-1"
+          d="M0,32 C180,12 360,52 540,32 C720,12 900,52 1080,32 C1260,12 1380,46 1440,32"
+          fill="none"
+          stroke="rgba(244,124,89,0.24)"
+          strokeWidth="1.4"
+        />
+        <path
+          className="fi-wl-2"
+          d="M0,40 C200,20 400,58 600,40 C800,20 1000,58 1200,40 C1340,24 1400,50 1440,40"
+          fill="none"
+          stroke="rgba(244,124,89,0.12)"
+          strokeWidth="0.9"
+        />
+        <path
+          className="fi-wl-3"
+          d="M0,50 C240,34 480,64 720,50 C960,34 1200,64 1440,50"
+          fill="none"
+          stroke="rgba(36,18,8,0.07)"
+          strokeWidth="0.7"
+        />
+      </svg>
 
       <div aria-hidden="true" className="fi-bottom-divider" />
     </section>
