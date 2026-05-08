@@ -9,9 +9,11 @@ import FinaleInterlude from "./FinaleInterlude.jsx";
 import Footer from "./Footer.jsx";
 import Navbar from "./Navbar.jsx";
 import Cursor from "./Cursor.jsx";
+import Preloader from "./Preloader.jsx";
 
 function App() {
   const [showGrain, setShowGrain] = useState(false);
+  const [isPreloading, setIsPreloading] = useState(true);
 
   useEffect(() => {
     const reducedMotionQuery = window.matchMedia(
@@ -59,6 +61,10 @@ function App() {
 
   return (
     <div style={{ isolation: "isolate" }}>
+      {isPreloading ? (
+        <Preloader onComplete={() => setIsPreloading(false)} />
+      ) : null}
+
       {/* ── Global fixed: Navbar + Cursor + Grain ── */}
       <Navbar />
       <Cursor />

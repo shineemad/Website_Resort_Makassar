@@ -48,12 +48,6 @@ const reviews = [
 ];
 
 const topLaneReviews = [...reviews, ...reviews];
-const bottomLaneReviews = [
-  ...reviews.slice(2),
-  ...reviews.slice(0, 2),
-  ...reviews.slice(2),
-  ...reviews.slice(0, 2),
-];
 
 function ReviewCard({ review, isGhost = false }) {
   return (
@@ -65,7 +59,7 @@ function ReviewCard({ review, isGhost = false }) {
         className="text-[11px] uppercase tracking-[1.2px]"
         style={{ color: "#F47C59", fontFamily: '"Inter", sans-serif' }}
       >
-        Guest Voice
+        Ulasan Tamu
       </p>
 
       <div className="mt-3 flex gap-1">
@@ -82,10 +76,10 @@ function ReviewCard({ review, isGhost = false }) {
       <p
         className="mt-4"
         style={{
-          color: "rgba(252,249,246,0.9)",
+          color: "rgba(252,249,246,0.88)",
           fontFamily: '"Inter", sans-serif',
-          fontSize: "15px",
-          lineHeight: "28px",
+          fontSize: "14px",
+          lineHeight: "23px",
           letterSpacing: "-0.016em",
         }}
       >
@@ -177,10 +171,20 @@ function Testimonials() {
           will-change: transform, opacity;
         }
 
+        .tm6-divider {
+          display: block;
+          width: clamp(34px, 6vw, 56px);
+          height: 0.8px;
+          margin-inline: auto;
+          background: rgba(244,124,89,0.7);
+        }
+
         .tm6-marquee {
           position: relative;
           overflow: hidden;
-          background: rgba(252, 249, 246, 0.04);
+          border-top: 0.8px solid rgba(252,249,246,0.12);
+          border-bottom: 0.8px solid rgba(252,249,246,0.12);
+          background: rgba(252,249,246,0.04);
         }
 
         .tm6-marquee::before,
@@ -196,18 +200,18 @@ function Testimonials() {
 
         .tm6-marquee::before {
           left: 0;
-          background: linear-gradient(to right, rgba(36, 18, 8, 0.9), transparent);
+          background: linear-gradient(to right, rgba(36,18,8,0.92), transparent);
         }
 
         .tm6-marquee::after {
           right: 0;
-          background: linear-gradient(to left, rgba(36, 18, 8, 0.9), transparent);
+          background: linear-gradient(to left, rgba(36,18,8,0.92), transparent);
         }
 
         .tm6-track {
           display: flex;
           width: max-content;
-          gap: 1rem;
+          gap: 1.1rem;
           padding: 1rem;
           will-change: transform;
           animation-play-state: paused;
@@ -230,18 +234,25 @@ function Testimonials() {
 
         .tm6-card {
           width: min(86vw, 390px);
-          background: rgba(252, 249, 246, 0.08);
+          border: 0.8px solid rgba(252,249,246,0.14);
+          background: rgba(252,249,246,0.08);
           box-shadow:
             rgba(0, 0, 0, 0.22) 0px 10px 22px -18px,
-            rgba(244, 124, 89, 0.16) 0px 14px 24px -22px;
+            rgba(244, 124, 89, 0.12) 0px 14px 24px -22px;
           transition:
             transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-            background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+            border-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+            box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .tm6-card:hover {
           transform: translateY(-2px);
-          background: rgba(252, 249, 246, 0.13);
+          border-color: rgba(244,124,89,0.44);
+          background: rgba(252,249,246,0.12);
+          box-shadow:
+            rgba(0, 0, 0, 0.24) 0px 12px 24px -18px,
+            rgba(244,124,89,0.16) 0px 18px 32px -20px;
         }
 
         @keyframes tm6MoveLeft {
@@ -296,8 +307,10 @@ function Testimonials() {
             Kata Mereka
           </motion.p>
 
+          <span aria-hidden="true" className="tm6-divider mt-4" />
+
           <motion.h2
-            className="tm6-reveal mt-3 text-4xl sm:text-5xl lg:text-[58px]"
+            className="tm6-reveal mt-8 text-4xl sm:text-5xl lg:text-[58px]"
             style={{
               color: "#FCF9F6",
               fontFamily: '"Instrument Serif", serif',
@@ -307,7 +320,7 @@ function Testimonials() {
             }}
             {...revealMotion(0.12)}
           >
-            Stories In Motion, Not Just Testimonials.
+            Ulasan Tamu, Elegansi Yang Konsisten.
           </motion.h2>
 
           <motion.p
@@ -322,14 +335,15 @@ function Testimonials() {
             }}
             {...revealMotion(0.18)}
           >
-            Dua lane bergerak ini menampilkan ritme pengalaman tamu yang terus
-            mengalir. Hover untuk memperlambat dan baca tiap cerita lebih dalam.
+            Setiap cerita menegaskan hal yang sama: pelayanan hangat, kamar
+            nyaman, dan pengalaman menginap yang terasa berkelas dari awal
+            hingga akhir.
           </motion.p>
         </div>
       </div>
 
       <motion.div
-        className="tm6-reveal relative z-10 mt-12 space-y-4"
+        className="tm6-reveal relative z-10 mt-12"
         {...revealMotion(0.24)}
       >
         <div
@@ -341,20 +355,6 @@ function Testimonials() {
                 key={`top-${review.name}-${index}`}
                 review={review}
                 isGhost={index >= topLaneReviews.length / 2}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div
-          className={`tm6-marquee tm6-bottom${marqueeActive ? " is-running" : ""}`}
-        >
-          <div className="tm6-track">
-            {bottomLaneReviews.map((review, index) => (
-              <ReviewCard
-                key={`bottom-${review.name}-${index}`}
-                review={review}
-                isGhost={index >= bottomLaneReviews.length / 2}
               />
             ))}
           </div>
