@@ -83,13 +83,14 @@ const About = () => {
       };
 
       if (!prefersReducedMotion) {
+        // ── Image column entrance (left side) ──
         gsap.fromTo(
           lineRef.current,
           { scaleX: 0, transformOrigin: "left" },
           {
             scaleX: 1,
-            duration: 0.8,
-            ease: "power2.out",
+            duration: 1.0,
+            ease: "expo.out",
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top 80%",
@@ -99,12 +100,12 @@ const About = () => {
 
         gsap.fromTo(
           visualRef.current,
-          { y: 28, opacity: 0 },
+          { x: -28, opacity: 0 },
           {
-            y: 0,
+            x: 0,
             opacity: 1,
-            duration: 0.8,
-            ease: "power2.out",
+            duration: 1.0,
+            ease: "expo.out",
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top 78%",
@@ -119,9 +120,69 @@ const About = () => {
             trigger: pinWrapRef.current,
             start: "top bottom",
             end: "bottom top",
-            scrub: 1.4,
+            scrub: 0.9,
           },
         });
+
+        // ── Content column entrance (right side) ──
+        const contentCol = sectionRef.current?.querySelector(".abt-content-col");
+        if (contentCol) {
+          const eyebrow = contentCol.querySelector(".abt-eyebrow");
+          const headline = contentCol.querySelector(".abt-headline");
+          const divider = contentCol.querySelector(".abt-divider");
+          const viewport = contentCol.querySelector(".abt-viewport");
+          const steps = contentCol.querySelector(".abt-steps");
+
+          gsap.fromTo(
+            eyebrow,
+            { opacity: 0, y: 12 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.72,
+              ease: "power3.out",
+              delay: 0.08,
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top 78%",
+              },
+            },
+          );
+
+          gsap.fromTo(
+            headline,
+            { opacity: 0, y: 36, clipPath: "inset(0 0 100% 0)" },
+            {
+              opacity: 1,
+              y: 0,
+              clipPath: "inset(0 0 0% 0)",
+              duration: 1.0,
+              ease: "expo.out",
+              delay: 0.18,
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top 78%",
+              },
+            },
+          );
+
+          gsap.fromTo(
+            [divider, viewport, steps],
+            { opacity: 0, y: 16 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.82,
+              stagger: 0.10,
+              ease: "power2.out",
+              delay: 0.34,
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top 78%",
+              },
+            },
+          );
+        }
       }
 
       const swapActiveStory = (index) => {
@@ -202,7 +263,16 @@ const About = () => {
         if (!track) return;
 
         const offset = cardOffsetsRef.current[index] ?? 0;
-        track.style.transform = `translate3d(0, ${-offset}px, 0)`;
+        if (prefersReducedMotion) {
+          track.style.transform = `translate3d(0, ${-offset}px, 0)`;
+        } else {
+          gsap.to(track, {
+            y: -offset,
+            duration: 0.56,
+            ease: "power3.out",
+            overwrite: "auto",
+          });
+        }
       };
 
       setCardTrackPosition(0);
@@ -213,7 +283,7 @@ const About = () => {
           start: "top top",
           end: () => `+=${window.innerHeight * (STORY_STEPS.length + 0.55)}`,
           pin: true,
-          scrub: 1.05,
+          scrub: 0.9,
           anticipatePin: 1,
           onUpdate: (self) => {
             const steppedProgress = Math.min(self.progress * 0.9999, 0.9999);
@@ -285,369 +355,305 @@ const About = () => {
   return (
     <>
       <style>{`
+        /* ─── Story card — dark minimal ─────────────────── */
         .story-card {
           position: relative;
-          overflow: hidden;
-          border-radius: 0px;
+          padding: clamp(14px, 1.8vh, 22px) 0;
+          border-top: 0.8px solid rgba(252,249,246,0.08);
           transform-origin: center top;
-          box-shadow: 0 20px 36px rgba(36, 18, 8, 0.06);
-          transition: background-color 300ms ease, border-color 300ms ease, transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms ease, filter 300ms ease, box-shadow 300ms ease;
+          transition:
+            opacity 300ms ease,
+            transform 300ms cubic-bezier(0.4,0,0.2,1),
+            filter 300ms ease,
+            border-color 300ms ease;
         }
-
-        .story-track {
-          width: 100%;
-          will-change: transform;
-          transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
         .story-card::before {
           content: "";
           position: absolute;
-          left: 0;
-          top: 0;
-          bottom: 0;
+          left: 0; top: 0; bottom: 0;
           width: 2px;
-          background: linear-gradient(180deg, rgba(244,124,89,0.18) 0%, rgba(244,124,89,0.86) 45%, rgba(244,124,89,0.28) 100%);
-          transform: scaleY(0.34);
-          transform-origin: center;
-          opacity: 0;
-          transition: opacity 300ms ease, transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+          background: #F47C59;
+          transform: scaleY(0);
+          transform-origin: top center;
+          transition: transform 0.44s cubic-bezier(0.22,1,0.36,1);
         }
-
         .story-card.is-active::before {
-          opacity: 1;
           transform: scaleY(1);
         }
-
         .story-card.is-active {
-          box-shadow: 0 28px 60px rgba(36, 18, 8, 0.1);
+          border-top-color: rgba(244,124,89,0.32);
+        }
+        .story-track {
+          width: 100%;
+          will-change: transform;
+          /* transform animated by GSAP */
         }
 
-        .story-card:hover {
-          background-color: rgba(244, 124, 89, 0.05);
-          border-color: rgba(36, 18, 8, 0.3);
-          transform: translateY(-1px);
-        }
-
-        .about-pin-wrap {
+        /* ─── Split frame ───────────────────────────────── */
+        .abt-frame {
+          display: grid;
+          grid-template-columns: 54fr 46fr;
+          height: 100svh;
+          min-height: 600px;
+          overflow: hidden;
           position: relative;
         }
 
-        .about-visual-sticky {
-          position: sticky;
-          top: 7rem;
-          height: fit-content;
+        /* ─── Image column ──────────────────────────────── */
+        .abt-img-col {
+          position: relative;
+          overflow: hidden;
+          height: 100%;
+        }
+        .abt-img-col img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          will-change: transform;
+        }
+        .abt-img-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to top,
+            rgba(10,6,3,0.92) 0%,
+            rgba(10,6,3,0.40) 38%,
+            rgba(10,6,3,0.10) 65%,
+            transparent 100%
+          );
+          pointer-events: none;
+        }
+        .abt-img-caption {
+          position: absolute;
+          bottom: clamp(40px, 5.5vh, 64px);
+          left: clamp(36px, 4.5vw, 60px);
+          right: clamp(36px, 4.5vw, 60px);
+        }
+        .abt-year {
+          font-family: "Instrument Serif", serif;
+          font-weight: 200;
+          font-size: clamp(72px, 8.4vw, 128px);
+          line-height: 0.86;
+          letter-spacing: -0.045em;
+          color: rgba(252,249,246,0.92);
+          display: block;
+          margin-bottom: 14px;
+        }
+        .abt-img-title {
+          font-family: "Inter", sans-serif;
+          font-size: 10px;
+          letter-spacing: 2.0px;
+          text-transform: uppercase;
+          color: rgba(252,249,246,0.44);
+          margin: 0;
+        }
+        /* Top orange accent line */
+        .abt-top-line {
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 2px;
+          overflow: hidden;
+          z-index: 4;
+        }
+        .abt-line-fill {
+          height: 100%;
+          background: linear-gradient(
+            to right,
+            #F47C59 0%,
+            rgba(244,124,89,0.36) 100%
+          );
+          transform-origin: left center;
         }
 
-        .about-desktop-frame {
-          min-height: 100svh;
+        /* ─── Content column ────────────────────────────── */
+        .abt-content-col {
+          background: #170e08;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 0 clamp(36px, 5.5vw, 80px);
+          position: relative;
+          overflow: hidden;
+        }
+        /* Subtle texture glow */
+        .abt-content-col::before {
+          content: "";
+          position: absolute;
+          top: -30%;
+          right: -20%;
+          width: 70%;
+          height: 70%;
+          border-radius: 50%;
+          background: radial-gradient(
+            circle,
+            rgba(244,124,89,0.07) 0%,
+            transparent 70%
+          );
+          pointer-events: none;
+        }
+        .abt-eyebrow {
+          font-family: "Inter", sans-serif;
+          font-size: 10px;
+          letter-spacing: 2.4px;
+          text-transform: uppercase;
+          color: #F47C59;
+          margin: 0 0 clamp(18px, 2.4vh, 28px);
+        }
+        .abt-headline {
+          font-family: "Instrument Serif", serif;
+          font-weight: 200;
+          font-size: clamp(38px, 4.4vw, 66px);
+          line-height: 0.96;
+          letter-spacing: -0.028em;
+          color: #fcf9f6;
+          margin: 0 0 clamp(20px, 2.6vh, 30px);
+        }
+        .abt-divider {
+          height: 0.8px;
+          background: rgba(252,249,246,0.10);
+          margin-bottom: clamp(20px, 2.6vh, 30px);
+        }
+        .abt-viewport {
+          overflow: hidden;
+          height: clamp(130px, 18vh, 200px);
+          -webkit-mask-image: linear-gradient(to bottom, black 78%, transparent 100%);
+          mask-image: linear-gradient(to bottom, black 78%, transparent 100%);
+          flex-shrink: 0;
+        }
+        .abt-card-body {
+          font-family: "Inter", sans-serif;
+          font-size: 14px;
+          line-height: 1.72;
+          letter-spacing: -0.016em;
+          color: rgba(252,249,246,0.68);
+          margin: 0;
+          padding-left: 16px;
+        }
+        /* Step indicators */
+        .abt-steps {
           display: flex;
           align-items: center;
+          gap: 12px;
+          margin-top: clamp(24px, 3.2vh, 40px);
+        }
+        .abt-step-pip {
+          height: 2px;
+          border-radius: 1px;
+          background: rgba(252,249,246,0.20);
+          transition: width 0.36s cubic-bezier(0.22,1,0.36,1), background 0.36s ease;
+          flex-shrink: 0;
+        }
+        .abt-step-pip.active {
+          background: #F47C59;
+        }
+        .abt-step-count {
+          font-family: "Inter", sans-serif;
+          font-size: 10px;
+          letter-spacing: 1.8px;
+          text-transform: uppercase;
+          color: rgba(252,249,246,0.26);
         }
 
-        .about-desktop-grid {
-          align-items: center;
-        }
-
-        .about-copy-column {
-          display: grid;
-          grid-template-rows: auto auto auto minmax(0, 1fr) auto;
-          align-content: start;
-          row-gap: clamp(12px, 1.6vh, 18px);
-        }
-
-        .about-cards-viewport {
-          min-height: 0;
-          height: clamp(250px, 31vh, 320px);
-          align-items: flex-start;
-          margin-bottom: clamp(14px, 2.2vh, 24px);
-          mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 84%, rgba(0, 0, 0, 0));
-        }
-
-        .about-headline {
-          text-wrap: balance;
-          margin-bottom: 0;
-        }
-
-        .about-divider {
-          margin-bottom: 0;
-        }
-
-        @media (max-height: 860px) {
-          .about-visual-sticky {
-            position: static;
-            top: auto;
+        /* ─── Mobile / tablet ───────────────────────────── */
+        @media (max-width: 1023px) {
+          .abt-frame {
+            grid-template-columns: 1fr;
             height: auto;
           }
-
-          .about-desktop-frame {
-            min-height: auto;
-            display: block;
+          .abt-img-col {
+            height: clamp(320px, 48vw, 520px);
           }
-        }
-
-        @media (min-width: 1280px) {
-          .about-desktop-grid {
-            grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-            gap: clamp(64px, 5.6vw, 92px);
-          }
-
-          .about-copy-column {
-            min-height: clamp(560px, calc(100svh - 170px), 690px);
-            row-gap: clamp(8px, 1.1vh, 12px);
-          }
-
-          .about-cards-viewport {
-            min-height: 0;
-            height: clamp(238px, 28vh, 300px);
-          }
-
-          .about-headline {
-            font-size: clamp(34px, 3.55vw, 54px);
-            line-height: 0.96;
-          }
-        }
-
-        @media (max-width: 767px) {
-          .about-desktop-frame {
-            min-height: auto;
-            display: block;
-          }
-
-          .about-cards-viewport {
-            min-height: auto;
-            height: auto;
-            mask-image: none;
-          }
-
-          .about-copy-column {
-            row-gap: 0;
+          .abt-content-col {
+            padding: clamp(48px, 8vw, 80px) clamp(24px, 6vw, 48px);
           }
         }
 
         @media (prefers-reduced-motion: reduce) {
           .story-card,
           .story-track,
-          .story-card::before {
+          .story-card::before,
+          .abt-step-pip {
             transition: none;
-          }
-
-          .story-card:hover {
-            transform: none;
           }
         }
       `}</style>
 
-      <section ref={sectionRef} className="about-pin-wrap">
-        <div
-          ref={pinWrapRef}
-          className="about-desktop-frame"
-          style={{
-            backgroundColor: T.neutral,
-            backgroundImage:
-              "radial-gradient(circle at 12% 18%, rgba(146,207,242,0.14) 0%, rgba(146,207,242,0) 44%)",
-            padding: "clamp(52px, 4.8vw, 72px) 0",
-            position: "relative",
-          }}
-        >
-          <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-12">
-            <div
-              ref={lineRef}
-              style={{
-                height: "0.8px",
-                backgroundColor: "rgba(36,18,8,0.14)",
-                marginBottom: "64px",
-              }}
+      <section ref={sectionRef} id="about">
+        <div ref={pinWrapRef} className="abt-frame">
+          {/* ── LEFT: full-bleed image column ── */}
+          <div ref={visualRef} className="abt-img-col">
+            <img
+              ref={imageRef}
+              src={activeImage}
+              alt={activeStory.title}
+              loading="lazy"
+              decoding="async"
             />
+            <div className="abt-img-overlay" />
 
-            <div className="about-desktop-grid grid grid-cols-1 gap-16 lg:grid-cols-2 lg:gap-20">
-              <div className="about-visual-sticky" ref={visualRef}>
-                <div
-                  className="relative z-10"
-                  style={{
-                    padding: "1px",
-                    borderRadius: "2px",
-                    background:
-                      "linear-gradient(135deg, rgba(244,124,89,0.40) 0%, rgba(255,255,255,0.06) 50%, rgba(36,18,8,0.08) 100%)",
-                    boxShadow: T.shadow,
-                  }}
-                >
-                  <div style={{ borderRadius: "0px", overflow: "hidden" }}>
-                    <img
-                      ref={imageRef}
-                      src={activeImage}
-                      alt={activeStory.title}
-                      style={{
-                        width: "100%",
-                        aspectRatio: "4 / 5",
-                        objectFit: "cover",
-                        display: "block",
-                      }}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                </div>
+            {/* Top accent line (lineRef) */}
+            <div className="abt-top-line">
+              <div ref={lineRef} className="abt-line-fill" />
+            </div>
 
-                <div
-                  ref={captionRef}
-                  style={{
-                    marginTop: "20px",
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: "12px",
-                    fontFamily: T.body,
-                    fontSize: "12px",
-                    letterSpacing: "1.2px",
-                    textTransform: "uppercase",
-                    color: "rgba(36,18,8,0.52)",
-                  }}
-                >
-                  <div
-                    ref={yearRef}
-                    style={{
-                      fontFamily: T.display,
-                      fontSize: "44px",
-                      fontWeight: 200,
-                      letterSpacing: "-0.02em",
-                      lineHeight: 1,
-                      color: T.primary,
-                    }}
-                  >
-                    {activeStory.year}
-                  </div>
-                  <div>{activeStory.title}</div>
-                </div>
+            {/* Year + title caption */}
+            <div className="abt-img-caption">
+              <div ref={captionRef}>
+                <span ref={yearRef} className="abt-year">
+                  {activeStory.year}
+                </span>
+                <p className="abt-img-title">{activeStory.title}</p>
               </div>
+            </div>
+          </div>
 
-              <div className="about-copy-column" style={{ paddingTop: "8px" }}>
-                <p
-                  style={{
-                    fontFamily: T.body,
-                    fontSize: "12px",
-                    fontWeight: 400,
-                    lineHeight: "16px",
-                    letterSpacing: "1.2px",
-                    textTransform: "uppercase",
-                    color: T.primary,
-                    marginBottom: "16px",
-                  }}
-                >
-                  Warisan Kemewahan Makassar
-                </p>
+          {/* ── RIGHT: editorial content column ── */}
+          <div className="abt-content-col">
+            <p className="abt-eyebrow">Warisan Kemewahan Makassar</p>
 
-                <h2
-                  ref={headlineRef}
-                  className="about-headline"
-                  style={{
-                    fontFamily: T.display,
-                    fontWeight: 200,
-                    fontSize: "clamp(38px, 4.5vw, 62px)",
-                    lineHeight: 1,
-                    letterSpacing: "-0.025em",
-                    color: T.secondary,
-                  }}
-                >
-                  {activeStory.headline}
-                  <br />
-                  <em>{activeStory.highlight}</em>
-                </h2>
+            <h2 ref={headlineRef} className="abt-headline">
+              {activeStory.headline}
+              <br />
+              <em>{activeStory.highlight}</em>
+            </h2>
 
-                <div
-                  className="about-divider"
-                  style={{
-                    height: "0.8px",
-                    backgroundColor: "rgba(36,18,8,0.16)",
-                  }}
-                />
-                <div
-                  ref={cardsViewportRef}
-                  className="about-cards-viewport"
-                  style={{
-                    display: "flex",
-                    overflow: "hidden",
-                    position: "relative",
-                  }}
-                >
+            <div className="abt-divider" />
+
+            {/* Cards viewport */}
+            <div ref={cardsViewportRef} className="abt-viewport">
+              <div
+                ref={cardsTrackRef}
+                className="story-track"
+                style={{ display: "flex", flexDirection: "column", gap: 0 }}
+              >
+                {STORY_STEPS.map((step, index) => (
                   <div
-                    ref={cardsTrackRef}
-                    className="story-track"
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "16px",
+                    key={step.year}
+                    ref={(el) => {
+                      cardRefs.current[index] = el;
                     }}
+                    className={`story-card${activeIndex === index ? " is-active" : ""}`}
                   >
-                    {STORY_STEPS.map((step, index) => (
-                      <div
-                        key={step.year}
-                        ref={(el) => {
-                          cardRefs.current[index] = el;
-                        }}
-                        className={`story-card ${activeIndex === index ? "is-active" : ""}`}
-                        style={{
-                          border: "0.8px solid rgba(36,18,8,0.22)",
-                          borderRadius: "0px",
-                          padding: "clamp(20px, 2.6vw, 34px)",
-                          backgroundColor:
-                            activeIndex === index
-                              ? "rgba(244,124,89,0.10)"
-                              : "rgba(252,249,246,0.96)",
-                        }}
-                      >
-                        <div
-                          style={{
-                            fontFamily: T.display,
-                            fontWeight: 200,
-                            fontSize: "clamp(32px, 3.2vw, 48px)",
-                            lineHeight: 1,
-                            letterSpacing: "-0.025em",
-                            color: T.secondary,
-                            marginBottom: "4px",
-                          }}
-                        >
-                          {step.year}
-                        </div>
-                        <div
-                          style={{
-                            fontFamily: T.body,
-                            fontSize: "12px",
-                            fontWeight: 400,
-                            lineHeight: "16px",
-                            letterSpacing: "1.2px",
-                            textTransform: "uppercase",
-                            color: T.primary,
-                            marginBottom: "8px",
-                          }}
-                        >
-                          {step.title}
-                        </div>
-                        <div
-                          style={{
-                            fontFamily: T.body,
-                            fontSize: "14px",
-                            fontWeight: 400,
-                            lineHeight: "20px",
-                            letterSpacing: "-0.025em",
-                            color: "rgba(36,18,8,0.72)",
-                          }}
-                        >
-                          {step.copy}
-                        </div>
-                      </div>
-                    ))}
+                    <p className="abt-card-body">{step.copy}</p>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
 
-            <div
-              style={{
-                height: "0.8px",
-                backgroundColor: "rgba(36,18,8,0.14)",
-                marginTop: "80px",
-              }}
-            />
+            {/* Step indicators */}
+            <div className="abt-steps">
+              {STORY_STEPS.map((_, i) => (
+                <div
+                  key={i}
+                  className={`abt-step-pip${activeIndex === i ? " active" : ""}`}
+                  style={{ width: activeIndex === i ? "24px" : "6px" }}
+                />
+              ))}
+              <span className="abt-step-count">
+                0{activeIndex + 1} · 0{STORY_STEPS.length}
+              </span>
+            </div>
           </div>
         </div>
       </section>
