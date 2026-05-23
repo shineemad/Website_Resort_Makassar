@@ -125,7 +125,8 @@ const About = () => {
         });
 
         // ── Content column entrance (right side) ──
-        const contentCol = sectionRef.current?.querySelector(".abt-content-col");
+        const contentCol =
+          sectionRef.current?.querySelector(".abt-content-col");
         if (contentCol) {
           const eyebrow = contentCol.querySelector(".abt-eyebrow");
           const headline = contentCol.querySelector(".abt-headline");
@@ -173,7 +174,7 @@ const About = () => {
               opacity: 1,
               y: 0,
               duration: 0.82,
-              stagger: 0.10,
+              stagger: 0.1,
               ease: "power2.out",
               delay: 0.34,
               scrollTrigger: {

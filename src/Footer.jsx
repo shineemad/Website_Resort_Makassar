@@ -1,409 +1,483 @@
-import React from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { MapPin, Phone, Mail } from "lucide-react";
+import React, { useLayoutEffect, useRef } from "react";
+import { MapPin, Phone, Mail, ArrowUpRight } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-const navLinks = [
-  { label: "Tentang Kami", href: "#about" },
+/* ── Design tokens ──────────────────────────────────────────────── */
+const T = {
+  primary:  "#F47C59",
+  dark:     "#241208",
+  darker:   "#170e08",
+  neutral:  "#FCF9F6",
+  display:  '"Instrument Serif", serif',
+  body:     '"Inter", sans-serif',
+};
+
+const NAV_LINKS = [
+  { label: "Tentang Kami",  href: "#about" },
   { label: "Kamar & Suite", href: "#featured-rooms" },
-  { label: "Fasilitas", href: "#facilities" },
-  { label: "Lokasi", href: "#location" },
-  { label: "Ulasan Tamu", href: "#testimonials" },
+  { label: "Fasilitas",     href: "#facilities" },
+  { label: "Lokasi",        href: "#location" },
+  { label: "Ulasan Tamu",   href: "#testimonials" },
 ];
 
-const contactItems = [
-  {
-    Icon: MapPin,
-    text: "Jl. Pasar Ikan No. 52, Makassar, Sulawesi Selatan 90111",
-  },
-  { Icon: Phone, text: "+62 411 313 737" },
-  { Icon: Mail, text: "reservasi@makassargoldenhotel.com" },
+const CONTACT = [
+  { Icon: MapPin, text: "Jl. Pasar Ikan No. 52, Makassar 90111" },
+  { Icon: Phone,  text: "+62 411 313 737" },
+  { Icon: Mail,   text: "reservasi@makassargoldenhotel.com" },
 ];
 
-function Footer() {
-  const prefersReducedMotion = useReducedMotion();
+/* ── Footer ─────────────────────────────────────────────────────── */
+export default function Footer() {
+  const footerRef   = useRef(null);
+  const eyebrowRef  = useRef(null);
+  const headlineRef = useRef(null);
+  const subRef      = useRef(null);
+  const divARef     = useRef(null);
+  const col1Ref     = useRef(null);
+  const col2Ref     = useRef(null);
+  const col3Ref     = useRef(null);
+  const divBRef     = useRef(null);
+  const barRef      = useRef(null);
+  const mghRef      = useRef(null);
 
-  const revealMotion = (delay = 0) => {
-    if (prefersReducedMotion) {
-      return {
-        initial: false,
-      };
-    }
+  /* ── GSAP entrance ──────────────────────────────────────────── */
+  useLayoutEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
 
-    return {
-      initial: { opacity: 0, y: 14 },
-      whileInView: { opacity: 1, y: 0 },
-      viewport: { once: true, amount: 0.24 },
-      transition: {
-        duration: 0.52,
-        ease: [0.22, 1, 0.36, 1],
-        delay,
-      },
-    };
-  };
+    const ctx = gsap.context(() => {
+      const st  = { trigger: footerRef.current, start: "top 82%" };
+      const st2 = { trigger: footerRef.current, start: "top 75%" };
+
+      /* Eyebrow */
+      gsap.fromTo(eyebrowRef.current,
+        { opacity: 0, x: -18 },
+        { opacity: 1, x: 0, duration: 0.75, ease: "expo.out", scrollTrigger: st },
+      );
+
+      /* Headline lines stagger */
+      if (headlineRef.current) {
+        gsap.fromTo(
+          headlineRef.current.querySelectorAll(".ft-hl"),
+          { opacity: 0, y: 46 },
+          { opacity: 1, y: 0, duration: 1.05, ease: "expo.out", stagger: 0.09, delay: 0.06, scrollTrigger: st },
+        );
+      }
+
+      /* Sub copy */
+      gsap.fromTo(subRef.current,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", delay: 0.34, scrollTrigger: st },
+      );
+
+      /* Divider A — scaleX from left */
+      gsap.fromTo(divARef.current,
+        { scaleX: 0, transformOrigin: "left center" },
+        { scaleX: 1, duration: 1.1, ease: "expo.out", delay: 0.42, scrollTrigger: st },
+      );
+
+      /* Grid columns stagger */
+      gsap.fromTo(
+        [col1Ref.current, col2Ref.current, col3Ref.current],
+        { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", stagger: 0.1, delay: 0.18, scrollTrigger: st2 },
+      );
+
+      /* Divider B */
+      gsap.fromTo(divBRef.current,
+        { scaleX: 0, transformOrigin: "left center" },
+        { scaleX: 1, duration: 0.9, ease: "expo.out", delay: 0.1, scrollTrigger: st2 },
+      );
+
+      /* Copyright bar */
+      gsap.fromTo(barRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6, ease: "power2.out", delay: 0.4, scrollTrigger: st2 },
+      );
+
+      /* MGH wordmark */
+      gsap.fromTo(mghRef.current,
+        { opacity: 0, y: 32, scale: 0.97 },
+        { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "expo.out", delay: 0.28, scrollTrigger: st2 },
+      );
+    }, footerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <footer
+      ref={footerRef}
       id="footer"
-      className="relative overflow-hidden"
-      style={{ backgroundColor: "#241208" }}
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        background: T.dark,
+      }}
     >
       <style>{`
-        .ft-reveal {
-          will-change: transform, opacity;
+        /* Headline lines */
+        #footer .ft-hl { display: block; }
+
+        /* Divider */
+        #footer .ft-divider {
+          height: 0.8px;
+          background: rgba(252,249,246,0.1);
         }
 
-        .ft-end-logo-wrap {
-          will-change: auto;
-        }
-
-        .ft-hairline {
-          border-top: 0.8px solid rgba(252, 249, 246, 0.2);
-        }
-
-        .ft-gridline {
-          border-top: 0.8px solid rgba(252, 249, 246, 0.14);
-          border-bottom: 0.8px solid rgba(252, 249, 246, 0.14);
-        }
-
-        .ft-nav-link {
+        /* Nav links */
+        #footer .ft-nav-link {
           position: relative;
-          display: inline-block;
-          color: rgba(36, 18, 8, 0.72);
-          transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
           font-family: "Inter", sans-serif;
-          font-size: 12px;
-          line-height: 16px;
-          letter-spacing: 1.2px;
+          font-size: 11px;
+          letter-spacing: 1.6px;
           text-transform: uppercase;
+          color: rgba(252,249,246,0.5);
+          text-decoration: none;
+          transition: color 0.24s ease;
         }
-
-        .ft-nav-link::after {
+        #footer .ft-nav-link::after {
           content: "";
           position: absolute;
-          bottom: -3px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 0%;
+          bottom: -2px; left: 0; right: 0;
           height: 0.8px;
-          background-color: #F47C59;
-          transition: width 300ms cubic-bezier(0.22, 1, 0.36, 1);
+          background: #F47C59;
+          transform: scaleX(0);
+          transform-origin: left center;
+          transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+        }
+        #footer .ft-nav-link:hover { color: #FCF9F6; }
+        #footer .ft-nav-link:hover::after { transform: scaleX(1); }
+
+        /* Contact row */
+        #footer .ft-contact-row {
+          display: flex; align-items: flex-start; gap: 10px;
+        }
+        #footer .ft-contact-icon {
+          width: 26px; height: 26px; border-radius: 2px; flex-shrink: 0;
+          border: 0.8px solid rgba(244,124,89,0.28);
+          background: rgba(244,124,89,0.1);
+          display: flex; align-items: center; justify-content: center;
         }
 
-        .ft-nav-link:hover {
-          color: #241208;
-        }
-
-        .ft-nav-link:hover::after {
-          width: 100%;
-        }
-
-        .ft-note-link {
-          color: rgba(252, 249, 246, 0.66);
-          transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
-          text-decoration: none;
-        }
-
-        .ft-note-link:hover {
-          color: #F47C59;
-        }
-
-        .ft-divider {
-          border: none;
-          border-top: 0.8px solid rgba(252, 249, 246, 0.2);
-          margin: 0;
-        }
-
-        .ft-end-logo-wrap {
-          border-top: 0.8px solid rgba(252, 249, 246, 0.14);
-          padding-top: 20px;
-          padding-bottom: 26px;
-        }
-
-        .ft-end-logo-mark {
-          display: block;
-          font-family: "Instrument Serif", serif;
-          font-weight: 200;
-          font-size: clamp(64px, 15vw, 196px);
-          line-height: 0.84;
-          letter-spacing: -0.04em;
-          color: rgba(252, 249, 246, 0.92);
-          text-align: center;
-          user-select: none;
-        }
-
-        .ft-end-logo-name {
-          margin-top: 8px;
-          text-align: center;
+        /* CTA link */
+        #footer .ft-cta {
+          display: inline-flex; align-items: center; gap: 7px;
           font-family: "Inter", sans-serif;
-          font-size: clamp(10px, 1.5vw, 12px);
-          line-height: 16px;
-          letter-spacing: 1.8px;
-          text-transform: uppercase;
-          color: rgba(252, 249, 246, 0.56);
+          font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+          color: #F47C59; text-decoration: none;
+          transition: gap 0.24s ease, opacity 0.24s ease;
         }
+        #footer .ft-cta:hover { gap: 11px; opacity: 0.82; }
 
-        @media (max-width: 767px) {
-          .ft-reveal {
-            transition-duration: 480ms;
-          }
-
-          .ft-end-logo-wrap {
-            padding-top: 16px;
-            padding-bottom: 22px;
-          }
-
-          .ft-end-logo-name {
-            letter-spacing: 1.3px;
-          }
+        /* MGH wordmark hover */
+        #footer .ft-mgh {
+          transition: opacity 0.3s ease, letter-spacing 0.4s ease;
+        }
+        #footer .ft-mgh:hover {
+          opacity: 0.78;
+          letter-spacing: -0.02em;
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .ft-reveal {
-            transition: none;
-            opacity: 1;
-            transform: none;
-          }
-
-          .ft-nav-link::after {
-            transition: none;
-          }
-
+          #footer .ft-nav-link::after { transition: none; }
         }
       `}</style>
 
-      {/* Ambient atmosphere */}
+      {/* ── Orange top accent line ──────────────────────────────── */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            "radial-gradient(56% 44% at 10% 8%, rgba(244,124,89,0.2), transparent 72%), radial-gradient(40% 36% at 90% 88%, rgba(252,249,246,0.08), transparent 72%), linear-gradient(180deg, rgba(36,18,8,1) 0%, rgba(36,18,8,1) 100%)",
+          position: "absolute", top: 0, left: 0, right: 0,
+          height: "1.5px", zIndex: 3,
+          background: `linear-gradient(to right, transparent 0%, ${T.primary}88 20%, ${T.primary} 50%, ${T.primary}88 80%, transparent 100%)`,
         }}
       />
 
-      {/* Top border accent line */}
+      {/* ── Grain overlay ──────────────────────────────────────── */}
       <div
         aria-hidden="true"
-        className="absolute left-0 right-0 top-0 h-[1.5px]"
         style={{
-          background:
-            "linear-gradient(to right, transparent 0%, rgba(244,124,89,0.64) 30%, rgba(244,124,89,0.9) 50%, rgba(244,124,89,0.64) 72%, transparent 100%)",
+          position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none",
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E\")",
+          opacity: 0.55,
         }}
       />
 
-      {/* Main content */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-12">
-        {/* Editorial header line */}
-        <div className="ft-hairline" aria-hidden="true" />
+      {/* ── Ambient glow ───────────────────────────────────────── */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none",
+          background:
+            "radial-gradient(55% 48% at 6% 6%, rgba(244,124,89,0.18), transparent 72%), " +
+            "radial-gradient(38% 34% at 94% 92%, rgba(252,249,246,0.05), transparent 70%)",
+        }}
+      />
 
-        {/* Brand statement */}
-        <motion.div
-          className="ft-reveal pb-10 pt-12 lg:pb-12 lg:pt-14"
-          {...revealMotion(0.08)}
+      <div style={{ position: "relative", zIndex: 2 }}>
+
+        {/* ── Chapter strip ──────────────────────────────────────── */}
+        <div
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "14px clamp(28px,5.5vw,72px)",
+            borderBottom: "0.8px solid rgba(252,249,246,0.07)",
+          }}
         >
-          <p
-            className="text-xs uppercase tracking-[1.2px]"
-            style={{ color: "#F47C59", fontFamily: '"Inter", sans-serif' }}
-          >
-            Since 1985
-          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <span style={{
+              fontFamily: T.display, fontWeight: 200,
+              fontSize: "clamp(28px,2.8vw,42px)", lineHeight: 1,
+              letterSpacing: "-0.04em", color: T.primary, opacity: 0.36,
+            }}>07</span>
+            <div style={{ width: "0.8px", height: "20px", background: "rgba(252,249,246,0.1)" }} />
+            <span style={{
+              fontFamily: T.body, fontSize: "9px",
+              letterSpacing: "2.2px", textTransform: "uppercase",
+              color: "rgba(252,249,246,0.3)",
+            }}>Penutup</span>
+          </div>
+          <span style={{
+            fontFamily: T.body, fontSize: "9px",
+            letterSpacing: "1.6px", textTransform: "uppercase",
+            color: "rgba(252,249,246,0.2)",
+          }}>Since 1985</span>
+        </div>
 
-          <h2
-            className="mt-4 max-w-[18ch] text-4xl sm:text-5xl lg:text-[56px]"
+        {/* ── Brand statement ─────────────────────────────────────── */}
+        <div
+          style={{
+            padding: "clamp(48px,6vh,80px) clamp(28px,5.5vw,72px) clamp(40px,5vh,56px)",
+          }}
+        >
+          {/* Eyebrow */}
+          <div
+            ref={eyebrowRef}
             style={{
-              color: "#FCF9F6",
-              fontFamily: '"Instrument Serif", serif',
-              fontWeight: 200,
-              lineHeight: 0.94,
-              letterSpacing: "-0.025em",
+              display: "flex", alignItems: "center", gap: "12px",
+              marginBottom: "clamp(20px,2.6vh,30px)", opacity: 0,
             }}
           >
-            Penutup yang tenang untuk perjalanan Anda di Makassar.
-          </h2>
+            <div style={{ width: "26px", height: "0.8px", background: T.primary }} />
+            <span style={{
+              fontFamily: T.body, fontSize: "9px",
+              letterSpacing: "2.6px", textTransform: "uppercase", color: T.primary,
+            }}>Makassar Golden Hotel</span>
+          </div>
 
-          <p
-            className="mt-5 max-w-[64ch]"
+          {/* Headline — staggered three lines */}
+          <div
+            ref={headlineRef}
+            style={{ marginBottom: "clamp(20px,2.8vh,32px)" }}
+          >
+            <span className="ft-hl" style={{
+              fontFamily: T.display, fontWeight: 200,
+              fontSize: "clamp(42px,4.8vw,72px)", lineHeight: 0.92,
+              letterSpacing: "-0.032em", color: T.neutral,
+            }}>Penutup</span>
+            <span className="ft-hl" style={{
+              fontFamily: T.display, fontWeight: 200,
+              fontSize: "clamp(42px,4.8vw,72px)", lineHeight: 0.92,
+              letterSpacing: "-0.032em", color: T.neutral,
+              paddingLeft: "clamp(20px,2.8vw,44px)",
+            }}>yang Tenang,</span>
+            <span className="ft-hl" style={{
+              fontFamily: T.display, fontWeight: 200,
+              fontSize: "clamp(42px,4.8vw,72px)", lineHeight: 0.92,
+              letterSpacing: "-0.032em", color: T.primary,
+              paddingLeft: "clamp(40px,5.6vw,88px)",
+            }}>Selalu Diingat.</span>
+          </div>
+
+          {/* Sub copy */}
+          <div
+            ref={subRef}
             style={{
-              color: "rgba(252,249,246,0.72)",
-              fontFamily: '"Inter", sans-serif',
-              fontSize: "14px",
-              lineHeight: "20px",
-              letterSpacing: "-0.025em",
+              display: "flex", alignItems: "flex-start", justifyContent: "space-between",
+              gap: "clamp(24px,4vw,64px)", flexWrap: "wrap", opacity: 0,
             }}
           >
-            Makassar Golden Hotel merangkum kehangatan heritage, ritme pesisir,
-            dan kenyamanan modern dalam satu alamat yang selalu kembali dicari.
-          </p>
-        </motion.div>
-
-        {/* Triptych grid */}
-        <div className="ft-gridline grid grid-cols-1 gap-8 py-10 lg:grid-cols-[1.2fr_0.9fr] lg:gap-10 lg:py-12">
-          {/* Column 1 - utility note */}
-          <motion.div className="ft-reveal" {...revealMotion(0.14)}>
-            <p
-              className="mb-4 text-xs uppercase tracking-[1.2px]"
-              style={{
-                color: "rgba(252,249,246,0.6)",
-                fontFamily: '"Inter", sans-serif',
-              }}
-            >
-              Catatan Tamu
+            <p style={{
+              fontFamily: T.body, fontSize: "14px",
+              lineHeight: 1.72, letterSpacing: "-0.016em",
+              color: "rgba(252,249,246,0.6)",
+              maxWidth: "52ch",
+            }}>
+              Makassar Golden Hotel merangkum kehangatan heritage, ritme pesisir,
+              dan kenyamanan modern dalam satu alamat yang selalu kembali dicari.
             </p>
+            <a href="mailto:reservasi@makassargoldenhotel.com" className="ft-cta">
+              Reservasi Sekarang
+              <ArrowUpRight size={12} strokeWidth={1.8} />
+            </a>
+          </div>
+        </div>
 
-            <p
-              className="max-w-[42ch]"
-              style={{
-                color: "rgba(252,249,246,0.82)",
-                fontFamily: '"Inter", sans-serif',
-                fontSize: "14px",
-                lineHeight: "20px",
-                letterSpacing: "-0.025em",
-              }}
-            >
+        {/* ── Divider A ───────────────────────────────────────────── */}
+        <div
+          ref={divARef}
+          className="ft-divider"
+          style={{ margin: "0 clamp(28px,5.5vw,72px)" }}
+        />
+
+        {/* ── Three-column grid ───────────────────────────────────── */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.4fr 0.8fr 1fr",
+            gap: "clamp(24px,4vw,56px)",
+            padding: "clamp(36px,4.5vh,56px) clamp(28px,5.5vw,72px)",
+          }}
+          className="max-lg:!grid-cols-1"
+        >
+          {/* Col 1 — brand note */}
+          <div ref={col1Ref} style={{ opacity: 0 }}>
+            <p style={{
+              fontFamily: T.body, fontSize: "9px",
+              letterSpacing: "2.2px", textTransform: "uppercase",
+              color: "rgba(252,249,246,0.3)", marginBottom: "18px",
+            }}>Catatan Tamu</p>
+            <p style={{
+              fontFamily: T.display, fontWeight: 200,
+              fontSize: "clamp(15px,1.6vw,20px)", lineHeight: 1.56,
+              letterSpacing: "-0.018em", color: "rgba(252,249,246,0.72)",
+              marginBottom: "22px",
+            }}>
               Dari sunrise di tepi Losari hingga malam penuh rasa khas Makassar,
-              setiap detail dirancang agar perjalanan Anda pulang dengan
-              kenangan yang utuh.
+              setiap detail dirancang agar perjalanan Anda pulang dengan kenangan yang utuh.
             </p>
-
-            <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-              <a
-                href="mailto:reservasi@makassargoldenhotel.com"
-                className="ft-note-link text-xs uppercase tracking-[1.2px]"
-                style={{ fontFamily: '"Inter", sans-serif' }}
-              >
-                Kirim Email
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <a href="mailto:reservasi@makassargoldenhotel.com" className="ft-cta">
+                Kirim Email <ArrowUpRight size={11} strokeWidth={1.8} />
               </a>
-              <span style={{ color: "rgba(36,18,8,0.24)" }}>•</span>
-              <a
-                href="tel:+62411313737"
-                className="ft-note-link text-xs uppercase tracking-[1.2px]"
-                style={{ fontFamily: '"Inter", sans-serif' }}
-              >
-                Hubungi Front Desk
+              <a href="tel:+62411313737" className="ft-cta">
+                Hubungi Front Desk <ArrowUpRight size={11} strokeWidth={1.8} />
               </a>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Column 2 - navigation + contact */}
-          <motion.div
-            className="grid grid-cols-1 gap-10 ft-reveal"
-            {...revealMotion(0.2)}
-          >
-            {/* Navigation */}
-            <div>
-              <p
-                className="mb-4 text-xs uppercase tracking-[1.2px]"
-                style={{
-                  color: "rgba(252,249,246,0.6)",
-                  fontFamily: '"Inter", sans-serif',
-                }}
-              >
-                Navigasi
-              </p>
-              <nav>
-                <ul className="space-y-4">
-                  {navLinks.map((link) => (
-                    <li key={link.label}>
-                      <a href={link.href} className="ft-nav-link">
-                        {link.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            </div>
-
-            {/* Contact */}
-            <div>
-              <p
-                className="mb-4 text-xs uppercase tracking-[1.2px]"
-                style={{
-                  color: "rgba(252,249,246,0.6)",
-                  fontFamily: '"Inter", sans-serif',
-                }}
-              >
-                Hubungi Kami
-              </p>
-              <ul className="space-y-4">
-                {contactItems.map(({ Icon, text }) => (
-                  <li key={text} className="flex items-start gap-3">
-                    <span
-                      className="mt-[2px] inline-flex h-6 w-6 shrink-0 items-center justify-center"
-                      style={{
-                        border: "0.8px solid rgba(252,249,246,0.2)",
-                        borderRadius: "2px",
-                        backgroundColor: "rgba(244,124,89,0.12)",
-                      }}
-                    >
-                      <Icon
-                        size={12}
-                        strokeWidth={1.8}
-                        style={{ color: "#F47C59" }}
-                      />
-                    </span>
-                    <p
-                      style={{
-                        color: "rgba(252,249,246,0.82)",
-                        fontFamily: '"Inter", sans-serif',
-                        fontSize: "13px",
-                        lineHeight: "20px",
-                        letterSpacing: "-0.01em",
-                      }}
-                    >
-                      {text}
-                    </p>
+          {/* Col 2 — navigation */}
+          <div ref={col2Ref} style={{ opacity: 0 }}>
+            <p style={{
+              fontFamily: T.body, fontSize: "9px",
+              letterSpacing: "2.2px", textTransform: "uppercase",
+              color: "rgba(252,249,246,0.3)", marginBottom: "18px",
+            }}>Navigasi</p>
+            <nav>
+              <ul style={{ display: "flex", flexDirection: "column", gap: "14px", listStyle: "none", padding: 0, margin: 0 }}>
+                {NAV_LINKS.map((link) => (
+                  <li key={link.label}>
+                    <a href={link.href} className="ft-nav-link">
+                      {link.label}
+                    </a>
                   </li>
                 ))}
               </ul>
-            </div>
-          </motion.div>
+            </nav>
+          </div>
+
+          {/* Col 3 — contact */}
+          <div ref={col3Ref} style={{ opacity: 0 }}>
+            <p style={{
+              fontFamily: T.body, fontSize: "9px",
+              letterSpacing: "2.2px", textTransform: "uppercase",
+              color: "rgba(252,249,246,0.3)", marginBottom: "18px",
+            }}>Hubungi Kami</p>
+            <ul style={{ display: "flex", flexDirection: "column", gap: "16px", listStyle: "none", padding: 0, margin: 0 }}>
+              {CONTACT.map(({ Icon, text }) => (
+                <li key={text} className="ft-contact-row">
+                  <span className="ft-contact-icon">
+                    <Icon size={12} strokeWidth={1.7} style={{ color: T.primary }} />
+                  </span>
+                  <p style={{
+                    fontFamily: T.body, fontSize: "12.5px",
+                    lineHeight: 1.62, letterSpacing: "-0.01em",
+                    color: "rgba(252,249,246,0.7)", margin: 0,
+                  }}>{text}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        <hr className="ft-divider" />
+        {/* ── Divider B ───────────────────────────────────────────── */}
+        <div
+          ref={divBRef}
+          className="ft-divider"
+          style={{ margin: "0 clamp(28px,5.5vw,72px)" }}
+        />
 
-        {/* Bottom bar */}
-        <motion.div
-          className="ft-reveal flex flex-wrap items-center justify-between gap-4 py-5"
-          {...revealMotion(0.24)}
+        {/* ── Copyright bar ───────────────────────────────────────── */}
+        <div
+          ref={barRef}
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            flexWrap: "wrap", gap: "12px",
+            padding: "16px clamp(28px,5.5vw,72px)",
+            opacity: 0,
+          }}
         >
-          <p
-            style={{
-              color: "rgba(252,249,246,0.62)",
-              fontFamily: '"Inter", sans-serif',
-              fontSize: "12px",
-              lineHeight: "16px",
-              letterSpacing: "0.01em",
-            }}
-          >
-            © {new Date().getFullYear()} Makassar Golden Hotel. Semua hak
-            dilindungi.
+          <p style={{
+            fontFamily: T.body, fontSize: "11px",
+            letterSpacing: "0.4px", color: "rgba(252,249,246,0.38)",
+          }}>
+            © {new Date().getFullYear()} Makassar Golden Hotel. Semua hak dilindungi.
           </p>
-
-          <p
-            style={{
-              color: "rgba(252,249,246,0.56)",
-              fontFamily: '"Inter", sans-serif',
-              fontSize: "11px",
-              lineHeight: "16px",
-              letterSpacing: "0.5px",
-              textTransform: "uppercase",
-            }}
-          >
+          <p style={{
+            fontFamily: T.body, fontSize: "9px",
+            letterSpacing: "2px", textTransform: "uppercase",
+            color: "rgba(252,249,246,0.26)",
+          }}>
             Heritage Hotel · Sulawesi Selatan
           </p>
-        </motion.div>
-
-        {/* End logo */}
-        <div
-          className="ft-end-logo-wrap ft-reveal"
-          aria-label="Makassar Golden Hotel logo"
-        >
-          <span className="ft-end-logo-mark">MGH</span>
-          <p className="ft-end-logo-name">Makassar Golden Hotel</p>
         </div>
+
+        {/* ── Giant MGH endplate ──────────────────────────────────── */}
+        <div
+          ref={mghRef}
+          style={{
+            borderTop: "0.8px solid rgba(252,249,246,0.07)",
+            padding: "clamp(14px,2.2vh,28px) clamp(28px,5.5vw,72px) 0",
+            opacity: 0,
+            overflow: "hidden",
+          }}
+          aria-label="Makassar Golden Hotel"
+        >
+          {/* MGH monogram */}
+          <p
+            className="ft-mgh"
+            style={{
+              fontFamily: T.display,
+              fontWeight: 200,
+              fontSize: "clamp(72px,16vw,220px)",
+              lineHeight: 0.82,
+              letterSpacing: "-0.04em",
+              color: "rgba(252,249,246,0.88)",
+              userSelect: "none",
+              display: "block",
+            }}
+            aria-hidden="true"
+          >
+            MGH
+          </p>
+
+          {/* Subline */}
+          <p style={{
+            fontFamily: T.body, fontSize: "9px",
+            letterSpacing: "3.2px", textTransform: "uppercase",
+            color: "rgba(252,249,246,0.28)",
+            paddingBottom: "clamp(16px,2.5vh,32px)",
+            marginTop: "10px",
+          }}>
+            Makassar Golden Hotel
+          </p>
+        </div>
+
       </div>
     </footer>
   );
 }
-
-export default Footer;
