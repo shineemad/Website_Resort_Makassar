@@ -444,35 +444,30 @@ export default function Footer() {
             padding: "clamp(14px,2.2vh,28px) clamp(28px,5.5vw,72px) 0",
             opacity: 0,
             overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
           }}
           aria-label="Makassar Golden Hotel"
         >
-          {/* MGH monogram */}
+          {/* Wordmark */}
           <p
             className="ft-mgh"
             style={{
               fontFamily: T.display,
               fontWeight: 200,
-              fontSize: "clamp(72px,16vw,220px)",
-              lineHeight: 0.82,
-              letterSpacing: "-0.04em",
+              fontSize: "clamp(36px,7vw,110px)",
+              lineHeight: 0.9,
+              letterSpacing: "0.12em",
               color: "rgba(252,249,246,0.88)",
               userSelect: "none",
               display: "block",
+              textAlign: "center",
+              textTransform: "uppercase",
+              paddingBottom: "clamp(16px,2.5vh,32px)",
             }}
-            aria-hidden="true"
           >
-            MGH
-          </p>
-
-          {/* Subline */}
-          <p style={{
-            fontFamily: T.body, fontSize: "9px",
-            letterSpacing: "3.2px", textTransform: "uppercase",
-            color: "rgba(252,249,246,0.28)",
-            paddingBottom: "clamp(16px,2.5vh,32px)",
-            marginTop: "10px",
-          }}>
             Makassar Golden Hotel
           </p>
         </div>

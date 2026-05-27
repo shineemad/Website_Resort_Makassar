@@ -590,10 +590,10 @@ function FeaturedRooms() {
           transform: translateX(-50%) rotate(-90deg);
           white-space: nowrap;
           font-family: "Inter", sans-serif;
-          font-size: 8px;
-          letter-spacing: 1.8px;
+          font-size: 10px;
+          letter-spacing: 1.6px;
           text-transform: uppercase;
-          color: rgba(252,249,246,0.32);
+          color: rgba(252,249,246,0.36);
           opacity: 1;
           transition: opacity 0.26s ease;
           pointer-events: none;
@@ -630,8 +630,8 @@ function FeaturedRooms() {
         }
 
         .fr-cta:hover {
-          background: ${T.secondary} !important;
-          color: ${T.neutral} !important;
+          background: ${T.primary} !important;
+          color: ${T.secondary} !important;
           transform: translateY(-2px);
         }
 
@@ -998,7 +998,7 @@ function FeaturedRooms() {
           <span
             style={{
               fontFamily: T.body,
-              fontSize: "9px",
+              fontSize: "11px",
               letterSpacing: "1.6px",
               textTransform: "uppercase",
               color: "rgba(36,18,8,0.28)",
@@ -1043,8 +1043,8 @@ function FeaturedRooms() {
               <p
                 style={{
                   fontFamily: T.body,
-                  fontSize: "10px",
-                  letterSpacing: "2.4px",
+                  fontSize: "12px",
+                  letterSpacing: "2px",
                   textTransform: "uppercase",
                   color: T.primary,
                   margin: "0 0 clamp(14px,1.8vh,22px)",
@@ -1056,11 +1056,13 @@ function FeaturedRooms() {
                 style={{
                   fontFamily: T.display,
                   fontWeight: 200,
-                  fontSize: "clamp(34px,3.8vw,58px)",
-                  lineHeight: 0.96,
-                  letterSpacing: "-0.028em",
+                  fontSize: "clamp(36px,4vw,64px)",
+                  lineHeight: 0.94,
+                  letterSpacing: "-0.03em",
                   color: T.secondary,
                   margin: "0 0 clamp(22px,3vh,38px)",
+                  fontFeatureSettings: '"kern" 1, "liga" 1',
+                  textRendering: "optimizeLegibility",
                 }}
               >
                 Kenyamanan Klasik,
@@ -1108,8 +1110,8 @@ function FeaturedRooms() {
                 <span
                   style={{
                     fontFamily: T.body,
-                    fontSize: "9.5px",
-                    letterSpacing: "2px",
+                    fontSize: "11px",
+                    letterSpacing: "1.8px",
                     textTransform: "uppercase",
                     color: "rgba(36,18,8,0.38)",
                   }}
@@ -1122,11 +1124,12 @@ function FeaturedRooms() {
                 style={{
                   fontFamily: T.display,
                   fontWeight: 200,
-                  fontSize: "clamp(22px,2.6vw,36px)",
+                  fontSize: "clamp(24px,2.8vw,40px)",
                   lineHeight: 1,
-                  letterSpacing: "-0.025em",
+                  letterSpacing: "-0.026em",
                   color: T.secondary,
-                  margin: "0 0 14px",
+                  margin: "0 0 16px",
+                  fontFeatureSettings: '"kern" 1, "liga" 1',
                 }}
               >
                 {activeRoom.name}
@@ -1135,10 +1138,10 @@ function FeaturedRooms() {
               <p
                 style={{
                   fontFamily: T.body,
-                  fontSize: "13px",
-                  lineHeight: 1.72,
-                  letterSpacing: "-0.016em",
-                  color: "rgba(36,18,8,0.62)",
+                  fontSize: "14px",
+                  lineHeight: 1.65,
+                  letterSpacing: "-0.018em",
+                  color: "rgba(36,18,8,0.60)",
                   margin: "0 0 clamp(16px,2.2vh,26px)",
                   maxWidth: "38ch",
                 }}
@@ -1164,8 +1167,8 @@ function FeaturedRooms() {
                     key={label}
                     style={{
                       fontFamily: T.body,
-                      fontSize: "10px",
-                      letterSpacing: "1.4px",
+                      fontSize: "11px",
+                      letterSpacing: "1.2px",
                       textTransform: "uppercase",
                       color: "rgba(36,18,8,0.44)",
                       display: "flex",
@@ -1192,11 +1195,11 @@ function FeaturedRooms() {
                   <div
                     style={{
                       fontFamily: T.body,
-                      fontSize: "8.5px",
-                      letterSpacing: "1.8px",
+                      fontSize: "11px",
+                      letterSpacing: "1.4px",
                       textTransform: "uppercase",
                       color: "rgba(36,18,8,0.36)",
-                      marginBottom: "4px",
+                      marginBottom: "6px",
                     }}
                   >
                     Mulai dari
@@ -1205,18 +1208,19 @@ function FeaturedRooms() {
                     style={{
                       fontFamily: T.display,
                       fontWeight: 200,
-                      fontSize: "clamp(22px,2.4vw,34px)",
+                      fontSize: "clamp(28px,3vw,44px)",
                       lineHeight: 1,
-                      letterSpacing: "-0.025em",
+                      letterSpacing: "-0.03em",
                       color: T.secondary,
+                      fontFeatureSettings: '"onum" 1, "kern" 1',
                     }}
                   >
                     {activeRoom.price}
                     <span
                       style={{
                         fontFamily: T.body,
-                        fontSize: "9.5px",
-                        letterSpacing: "1.4px",
+                        fontSize: "11px",
+                        letterSpacing: "1.2px",
                         textTransform: "uppercase",
                         color: "rgba(36,18,8,0.38)",
                         marginLeft: "6px",
@@ -1232,17 +1236,17 @@ function FeaturedRooms() {
                   className="fr-cta"
                   style={{
                     fontFamily: T.body,
-                    fontSize: "10.5px",
-                    letterSpacing: "1.6px",
+                    fontSize: "12px",
+                    letterSpacing: "1.4px",
                     textTransform: "uppercase",
-                    color: T.secondary,
-                    background: T.primary,
+                    color: T.neutral,
+                    background: T.secondary,
                     border: "none",
-                    padding: "10px 18px",
+                    padding: "12px 24px",
                     cursor: "pointer",
                     display: "inline-flex",
                     alignItems: "center",
-                    gap: "7px",
+                    gap: "8px",
                     flexShrink: 0,
                   }}
                 >
@@ -1332,8 +1336,8 @@ function FeaturedRooms() {
               <span
                 style={{
                   fontFamily: T.body,
-                  fontSize: "9.5px",
-                  letterSpacing: "1.8px",
+                  fontSize: "11px",
+                  letterSpacing: "1.6px",
                   textTransform: "uppercase",
                   color: "rgba(36,18,8,0.28)",
                   marginLeft: "auto",
@@ -1422,11 +1426,12 @@ function FeaturedRooms() {
                       style={{
                         fontFamily: T.display,
                         fontWeight: 200,
-                        fontSize: "clamp(18px,2.2vw,28px)",
+                        fontSize: "clamp(20px,2.4vw,32px)",
                         lineHeight: 1,
-                        letterSpacing: "-0.025em",
+                        letterSpacing: "-0.026em",
                         color: T.neutral,
-                        marginBottom: "7px",
+                        marginBottom: "8px",
+                        fontFeatureSettings: '"kern" 1, "liga" 1',
                       }}
                     >
                       {room.name}
@@ -1434,10 +1439,10 @@ function FeaturedRooms() {
                     <div
                       style={{
                         fontFamily: T.body,
-                        fontSize: "9.5px",
-                        letterSpacing: "1.6px",
+                        fontSize: "11px",
+                        letterSpacing: "1.4px",
                         textTransform: "uppercase",
-                        color: "rgba(252,249,246,0.44)",
+                        color: "rgba(252,249,246,0.46)",
                         display: "flex",
                         alignItems: "center",
                         gap: "8px",
