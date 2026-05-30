@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, MapPin, Phone } from "lucide-react";
 import { gsap } from "gsap";
+// map
 
 /* ── Cursor-follower images — 8 hotel / Makassar scenes ── */
 const HOVER_IMAGES = [
