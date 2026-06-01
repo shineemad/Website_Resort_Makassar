@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
+  { label: "Tentang", id: "about" },
   { label: "Kamar", id: "featured-rooms" },
   { label: "Fasilitas", id: "facilities" },
   { label: "Lokasi", id: "location" },

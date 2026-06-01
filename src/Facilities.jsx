@@ -540,13 +540,30 @@ function Facilities() {
             width: 100%;
             height: auto;
             flex-direction: column;
+            border-bottom: 0.8px solid rgba(252,249,246,0.08);
+          }
+          .fac-panel:last-child { border-bottom: none; }
+          /* Image lead, text follows — editorial mobile rhythm */
+          .fac-right {
+            order: -1;
+            width: 100%;
+            height: 64vw;
+            min-height: 280px;
+            max-height: 420px;
           }
           .fac-left {
             width: 100%;
-            padding: clamp(36px,5vh,52px) clamp(20px,5vw,36px) clamp(24px,4vh,36px);
+            border-right: none;
+            padding: clamp(28px,4.5vh,44px) clamp(20px,5vw,36px) clamp(32px,4.5vh,48px);
           }
-          .fac-right { height: 54vw; min-height: 260px; }
-          .fac-bg-num { font-size: clamp(100px,16vw,180px); }
+          .fac-bg-num {
+            font-size: clamp(110px,22vw,200px);
+            top: auto;
+            bottom: -0.15em;
+            right: -0.06em;
+            opacity: 0.85;
+          }
+          .fac-accent-edge { top: 0; bottom: 0; }
           .fac-idx { display: none; }
         }
 

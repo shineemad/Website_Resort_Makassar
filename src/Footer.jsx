@@ -5,54 +5,61 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /* ── Design tokens ──────────────────────────────────────────────── */
 const T = {
-  primary:  "#F47C59",
-  dark:     "#241208",
-  darker:   "#170e08",
-  neutral:  "#FCF9F6",
-  display:  '"Instrument Serif", serif',
-  body:     '"Inter", sans-serif',
+  primary: "#F47C59",
+  dark: "#241208",
+  darker: "#170e08",
+  neutral: "#FCF9F6",
+  display: '"Instrument Serif", serif',
+  body: '"Inter", sans-serif',
 };
 
 const NAV_LINKS = [
-  { label: "Tentang Kami",  href: "#about" },
+  { label: "Tentang Kami", href: "#about" },
   { label: "Kamar & Suite", href: "#featured-rooms" },
-  { label: "Fasilitas",     href: "#facilities" },
-  { label: "Lokasi",        href: "#location" },
-  { label: "Ulasan Tamu",   href: "#testimonials" },
+  { label: "Fasilitas", href: "#facilities" },
+  { label: "Lokasi", href: "#location" },
+  { label: "Ulasan Tamu", href: "#testimonials" },
 ];
 
 const CONTACT = [
   { Icon: MapPin, text: "Jl. Pasar Ikan No. 52, Makassar 90111" },
-  { Icon: Phone,  text: "+62 411 313 737" },
-  { Icon: Mail,   text: "reservasi@makassargoldenhotel.com" },
+  { Icon: Phone, text: "+62 411 313 737" },
+  { Icon: Mail, text: "reservasi@makassargoldenhotel.com" },
 ];
 
 /* ── Footer ─────────────────────────────────────────────────────── */
 export default function Footer() {
-  const footerRef   = useRef(null);
-  const eyebrowRef  = useRef(null);
+  const footerRef = useRef(null);
+  const eyebrowRef = useRef(null);
   const headlineRef = useRef(null);
-  const subRef      = useRef(null);
-  const divARef     = useRef(null);
-  const col1Ref     = useRef(null);
-  const col2Ref     = useRef(null);
-  const col3Ref     = useRef(null);
-  const divBRef     = useRef(null);
-  const barRef      = useRef(null);
-  const mghRef      = useRef(null);
+  const subRef = useRef(null);
+  const divARef = useRef(null);
+  const col1Ref = useRef(null);
+  const col2Ref = useRef(null);
+  const col3Ref = useRef(null);
+  const divBRef = useRef(null);
+  const barRef = useRef(null);
+  const mghRef = useRef(null);
 
   /* ── GSAP entrance ──────────────────────────────────────────── */
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      const st  = { trigger: footerRef.current, start: "top 82%" };
+      const st = { trigger: footerRef.current, start: "top 82%" };
       const st2 = { trigger: footerRef.current, start: "top 75%" };
 
       /* Eyebrow */
-      gsap.fromTo(eyebrowRef.current,
+      gsap.fromTo(
+        eyebrowRef.current,
         { opacity: 0, x: -18 },
-        { opacity: 1, x: 0, duration: 0.75, ease: "expo.out", scrollTrigger: st },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.75,
+          ease: "expo.out",
+          scrollTrigger: st,
+        },
       );
 
       /* Headline lines stagger */
@@ -60,45 +67,99 @@ export default function Footer() {
         gsap.fromTo(
           headlineRef.current.querySelectorAll(".ft-hl"),
           { opacity: 0, y: 46 },
-          { opacity: 1, y: 0, duration: 1.05, ease: "expo.out", stagger: 0.09, delay: 0.06, scrollTrigger: st },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1.05,
+            ease: "expo.out",
+            stagger: 0.09,
+            delay: 0.06,
+            scrollTrigger: st,
+          },
         );
       }
 
       /* Sub copy */
-      gsap.fromTo(subRef.current,
+      gsap.fromTo(
+        subRef.current,
         { opacity: 0, y: 16 },
-        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", delay: 0.34, scrollTrigger: st },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          ease: "power3.out",
+          delay: 0.34,
+          scrollTrigger: st,
+        },
       );
 
       /* Divider A — scaleX from left */
-      gsap.fromTo(divARef.current,
+      gsap.fromTo(
+        divARef.current,
         { scaleX: 0, transformOrigin: "left center" },
-        { scaleX: 1, duration: 1.1, ease: "expo.out", delay: 0.42, scrollTrigger: st },
+        {
+          scaleX: 1,
+          duration: 1.1,
+          ease: "expo.out",
+          delay: 0.42,
+          scrollTrigger: st,
+        },
       );
 
       /* Grid columns stagger */
       gsap.fromTo(
         [col1Ref.current, col2Ref.current, col3Ref.current],
         { opacity: 0, y: 22 },
-        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", stagger: 0.1, delay: 0.18, scrollTrigger: st2 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          ease: "power3.out",
+          stagger: 0.1,
+          delay: 0.18,
+          scrollTrigger: st2,
+        },
       );
 
       /* Divider B */
-      gsap.fromTo(divBRef.current,
+      gsap.fromTo(
+        divBRef.current,
         { scaleX: 0, transformOrigin: "left center" },
-        { scaleX: 1, duration: 0.9, ease: "expo.out", delay: 0.1, scrollTrigger: st2 },
+        {
+          scaleX: 1,
+          duration: 0.9,
+          ease: "expo.out",
+          delay: 0.1,
+          scrollTrigger: st2,
+        },
       );
 
       /* Copyright bar */
-      gsap.fromTo(barRef.current,
+      gsap.fromTo(
+        barRef.current,
         { opacity: 0 },
-        { opacity: 1, duration: 0.6, ease: "power2.out", delay: 0.4, scrollTrigger: st2 },
+        {
+          opacity: 1,
+          duration: 0.6,
+          ease: "power2.out",
+          delay: 0.4,
+          scrollTrigger: st2,
+        },
       );
 
       /* MGH wordmark */
-      gsap.fromTo(mghRef.current,
+      gsap.fromTo(
+        mghRef.current,
         { opacity: 0, y: 32, scale: 0.97 },
-        { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "expo.out", delay: 0.28, scrollTrigger: st2 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.2,
+          ease: "expo.out",
+          delay: 0.28,
+          scrollTrigger: st2,
+        },
       );
     }, footerRef);
 
@@ -157,7 +218,7 @@ export default function Footer() {
           display: flex; align-items: flex-start; gap: 10px;
         }
         #footer .ft-contact-icon {
-          width: 26px; height: 26px; border-radius: 2px; flex-shrink: 0;
+          width: 26px; height: 26px; border-radius: 0; flex-shrink: 0;
           border: 0.8px solid rgba(244,124,89,0.28);
           background: rgba(244,124,89,0.1);
           display: flex; align-items: center; justify-content: center;
@@ -191,8 +252,12 @@ export default function Footer() {
       <div
         aria-hidden="true"
         style={{
-          position: "absolute", top: 0, left: 0, right: 0,
-          height: "1.5px", zIndex: 3,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "1.5px",
+          zIndex: 3,
           background: `linear-gradient(to right, transparent 0%, ${T.primary}88 20%, ${T.primary} 50%, ${T.primary}88 80%, transparent 100%)`,
         }}
       />
@@ -201,8 +266,12 @@ export default function Footer() {
       <div
         aria-hidden="true"
         style={{
-          position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none",
-          backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E\")",
+          position: "absolute",
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: "none",
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E\")",
           opacity: 0.55,
         }}
       />
@@ -211,7 +280,10 @@ export default function Footer() {
       <div
         aria-hidden="true"
         style={{
-          position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none",
+          position: "absolute",
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: "none",
           background:
             "radial-gradient(55% 48% at 6% 6%, rgba(244,124,89,0.18), transparent 72%), " +
             "radial-gradient(38% 34% at 94% 92%, rgba(252,249,246,0.05), transparent 70%)",
@@ -219,54 +291,94 @@ export default function Footer() {
       />
 
       <div style={{ position: "relative", zIndex: 2 }}>
-
         {/* ── Chapter strip ──────────────────────────────────────── */}
         <div
           style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
             padding: "14px clamp(28px,5.5vw,72px)",
             borderBottom: "0.8px solid rgba(252,249,246,0.07)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-            <span style={{
-              fontFamily: T.display, fontWeight: 200,
-              fontSize: "clamp(28px,2.8vw,42px)", lineHeight: 1,
-              letterSpacing: "-0.04em", color: T.primary, opacity: 0.36,
-            }}>07</span>
-            <div style={{ width: "0.8px", height: "20px", background: "rgba(252,249,246,0.1)" }} />
-            <span style={{
-              fontFamily: T.body, fontSize: "9px",
-              letterSpacing: "2.2px", textTransform: "uppercase",
-              color: "rgba(252,249,246,0.3)",
-            }}>Penutup</span>
+            <span
+              style={{
+                fontFamily: T.display,
+                fontWeight: 200,
+                fontSize: "clamp(28px,2.8vw,42px)",
+                lineHeight: 1,
+                letterSpacing: "-0.04em",
+                color: T.primary,
+                opacity: 0.36,
+              }}
+            >
+              07
+            </span>
+            <div
+              style={{
+                width: "0.8px",
+                height: "20px",
+                background: "rgba(252,249,246,0.1)",
+              }}
+            />
+            <span
+              style={{
+                fontFamily: T.body,
+                fontSize: "9px",
+                letterSpacing: "2.2px",
+                textTransform: "uppercase",
+                color: "rgba(252,249,246,0.3)",
+              }}
+            >
+              Penutup
+            </span>
           </div>
-          <span style={{
-            fontFamily: T.body, fontSize: "9px",
-            letterSpacing: "1.6px", textTransform: "uppercase",
-            color: "rgba(252,249,246,0.2)",
-          }}>Since 1985</span>
+          <span
+            style={{
+              fontFamily: T.body,
+              fontSize: "9px",
+              letterSpacing: "1.6px",
+              textTransform: "uppercase",
+              color: "rgba(252,249,246,0.2)",
+            }}
+          >
+            Since 1985
+          </span>
         </div>
 
         {/* ── Brand statement ─────────────────────────────────────── */}
         <div
           style={{
-            padding: "clamp(48px,6vh,80px) clamp(28px,5.5vw,72px) clamp(40px,5vh,56px)",
+            padding:
+              "clamp(48px,6vh,80px) clamp(28px,5.5vw,72px) clamp(40px,5vh,56px)",
           }}
         >
           {/* Eyebrow */}
           <div
             ref={eyebrowRef}
             style={{
-              display: "flex", alignItems: "center", gap: "12px",
-              marginBottom: "clamp(20px,2.6vh,30px)", opacity: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              marginBottom: "clamp(20px,2.6vh,30px)",
+              opacity: 0,
             }}
           >
-            <div style={{ width: "26px", height: "0.8px", background: T.primary }} />
-            <span style={{
-              fontFamily: T.body, fontSize: "9px",
-              letterSpacing: "2.6px", textTransform: "uppercase", color: T.primary,
-            }}>Makassar Golden Hotel</span>
+            <div
+              style={{ width: "26px", height: "0.8px", background: T.primary }}
+            />
+            <span
+              style={{
+                fontFamily: T.body,
+                fontSize: "9px",
+                letterSpacing: "2.6px",
+                textTransform: "uppercase",
+                color: T.primary,
+              }}
+            >
+              Makassar Golden Hotel
+            </span>
           </div>
 
           {/* Headline — staggered three lines */}
@@ -274,43 +386,79 @@ export default function Footer() {
             ref={headlineRef}
             style={{ marginBottom: "clamp(20px,2.8vh,32px)" }}
           >
-            <span className="ft-hl" style={{
-              fontFamily: T.display, fontWeight: 200,
-              fontSize: "clamp(42px,4.8vw,72px)", lineHeight: 0.92,
-              letterSpacing: "-0.032em", color: T.neutral,
-            }}>Penutup</span>
-            <span className="ft-hl" style={{
-              fontFamily: T.display, fontWeight: 200,
-              fontSize: "clamp(42px,4.8vw,72px)", lineHeight: 0.92,
-              letterSpacing: "-0.032em", color: T.neutral,
-              paddingLeft: "clamp(20px,2.8vw,44px)",
-            }}>yang Tenang,</span>
-            <span className="ft-hl" style={{
-              fontFamily: T.display, fontWeight: 200,
-              fontSize: "clamp(42px,4.8vw,72px)", lineHeight: 0.92,
-              letterSpacing: "-0.032em", color: T.primary,
-              paddingLeft: "clamp(40px,5.6vw,88px)",
-            }}>Selalu Diingat.</span>
+            <span
+              className="ft-hl"
+              style={{
+                fontFamily: T.display,
+                fontWeight: 200,
+                fontSize: "clamp(42px,4.8vw,72px)",
+                lineHeight: 0.92,
+                letterSpacing: "-0.032em",
+                color: T.neutral,
+              }}
+            >
+              Penutup
+            </span>
+            <span
+              className="ft-hl"
+              style={{
+                fontFamily: T.display,
+                fontWeight: 200,
+                fontSize: "clamp(42px,4.8vw,72px)",
+                lineHeight: 0.92,
+                letterSpacing: "-0.032em",
+                color: T.neutral,
+                paddingLeft: "clamp(20px,2.8vw,44px)",
+              }}
+            >
+              yang Tenang,
+            </span>
+            <span
+              className="ft-hl"
+              style={{
+                fontFamily: T.display,
+                fontWeight: 200,
+                fontSize: "clamp(42px,4.8vw,72px)",
+                lineHeight: 0.92,
+                letterSpacing: "-0.032em",
+                color: T.primary,
+                paddingLeft: "clamp(40px,5.6vw,88px)",
+              }}
+            >
+              Selalu Diingat.
+            </span>
           </div>
 
           {/* Sub copy */}
           <div
             ref={subRef}
             style={{
-              display: "flex", alignItems: "flex-start", justifyContent: "space-between",
-              gap: "clamp(24px,4vw,64px)", flexWrap: "wrap", opacity: 0,
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              gap: "clamp(24px,4vw,64px)",
+              flexWrap: "wrap",
+              opacity: 0,
             }}
           >
-            <p style={{
-              fontFamily: T.body, fontSize: "14px",
-              lineHeight: 1.72, letterSpacing: "-0.016em",
-              color: "rgba(252,249,246,0.6)",
-              maxWidth: "52ch",
-            }}>
-              Makassar Golden Hotel merangkum kehangatan heritage, ritme pesisir,
-              dan kenyamanan modern dalam satu alamat yang selalu kembali dicari.
+            <p
+              style={{
+                fontFamily: T.body,
+                fontSize: "14px",
+                lineHeight: 1.72,
+                letterSpacing: "-0.016em",
+                color: "rgba(252,249,246,0.6)",
+                maxWidth: "52ch",
+              }}
+            >
+              Makassar Golden Hotel merangkum kehangatan heritage, ritme
+              pesisir, dan kenyamanan modern dalam satu alamat yang selalu
+              kembali dicari.
             </p>
-            <a href="mailto:reservasi@makassargoldenhotel.com" className="ft-cta">
+            <a
+              href="mailto:reservasi@makassargoldenhotel.com"
+              className="ft-cta"
+            >
               Reservasi Sekarang
               <ArrowUpRight size={12} strokeWidth={1.8} />
             </a>
@@ -336,22 +484,40 @@ export default function Footer() {
         >
           {/* Col 1 — brand note */}
           <div ref={col1Ref} style={{ opacity: 0 }}>
-            <p style={{
-              fontFamily: T.body, fontSize: "9px",
-              letterSpacing: "2.2px", textTransform: "uppercase",
-              color: "rgba(252,249,246,0.3)", marginBottom: "18px",
-            }}>Catatan Tamu</p>
-            <p style={{
-              fontFamily: T.display, fontWeight: 200,
-              fontSize: "clamp(15px,1.6vw,20px)", lineHeight: 1.56,
-              letterSpacing: "-0.018em", color: "rgba(252,249,246,0.72)",
-              marginBottom: "22px",
-            }}>
-              Dari sunrise di tepi Losari hingga malam penuh rasa khas Makassar,
-              setiap detail dirancang agar perjalanan Anda pulang dengan kenangan yang utuh.
+            <p
+              style={{
+                fontFamily: T.body,
+                fontSize: "9px",
+                letterSpacing: "2.2px",
+                textTransform: "uppercase",
+                color: "rgba(252,249,246,0.3)",
+                marginBottom: "18px",
+              }}
+            >
+              Catatan Tamu
             </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <a href="mailto:reservasi@makassargoldenhotel.com" className="ft-cta">
+            <p
+              style={{
+                fontFamily: T.display,
+                fontWeight: 200,
+                fontSize: "clamp(15px,1.6vw,20px)",
+                lineHeight: 1.56,
+                letterSpacing: "-0.018em",
+                color: "rgba(252,249,246,0.72)",
+                marginBottom: "22px",
+              }}
+            >
+              Dari sunrise di tepi Losari hingga malam penuh rasa khas Makassar,
+              setiap detail dirancang agar perjalanan Anda pulang dengan
+              kenangan yang utuh.
+            </p>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            >
+              <a
+                href="mailto:reservasi@makassargoldenhotel.com"
+                className="ft-cta"
+              >
                 Kirim Email <ArrowUpRight size={11} strokeWidth={1.8} />
               </a>
               <a href="tel:+62411313737" className="ft-cta">
@@ -362,13 +528,29 @@ export default function Footer() {
 
           {/* Col 2 — navigation */}
           <div ref={col2Ref} style={{ opacity: 0 }}>
-            <p style={{
-              fontFamily: T.body, fontSize: "9px",
-              letterSpacing: "2.2px", textTransform: "uppercase",
-              color: "rgba(252,249,246,0.3)", marginBottom: "18px",
-            }}>Navigasi</p>
+            <p
+              style={{
+                fontFamily: T.body,
+                fontSize: "9px",
+                letterSpacing: "2.2px",
+                textTransform: "uppercase",
+                color: "rgba(252,249,246,0.3)",
+                marginBottom: "18px",
+              }}
+            >
+              Navigasi
+            </p>
             <nav>
-              <ul style={{ display: "flex", flexDirection: "column", gap: "14px", listStyle: "none", padding: 0, margin: 0 }}>
+              <ul
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "14px",
+                  listStyle: "none",
+                  padding: 0,
+                  margin: 0,
+                }}
+              >
                 {NAV_LINKS.map((link) => (
                   <li key={link.label}>
                     <a href={link.href} className="ft-nav-link">
@@ -382,22 +564,49 @@ export default function Footer() {
 
           {/* Col 3 — contact */}
           <div ref={col3Ref} style={{ opacity: 0 }}>
-            <p style={{
-              fontFamily: T.body, fontSize: "9px",
-              letterSpacing: "2.2px", textTransform: "uppercase",
-              color: "rgba(252,249,246,0.3)", marginBottom: "18px",
-            }}>Hubungi Kami</p>
-            <ul style={{ display: "flex", flexDirection: "column", gap: "16px", listStyle: "none", padding: 0, margin: 0 }}>
+            <p
+              style={{
+                fontFamily: T.body,
+                fontSize: "9px",
+                letterSpacing: "2.2px",
+                textTransform: "uppercase",
+                color: "rgba(252,249,246,0.3)",
+                marginBottom: "18px",
+              }}
+            >
+              Hubungi Kami
+            </p>
+            <ul
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+              }}
+            >
               {CONTACT.map(({ Icon, text }) => (
                 <li key={text} className="ft-contact-row">
                   <span className="ft-contact-icon">
-                    <Icon size={12} strokeWidth={1.7} style={{ color: T.primary }} />
+                    <Icon
+                      size={12}
+                      strokeWidth={1.7}
+                      style={{ color: T.primary }}
+                    />
                   </span>
-                  <p style={{
-                    fontFamily: T.body, fontSize: "12.5px",
-                    lineHeight: 1.62, letterSpacing: "-0.01em",
-                    color: "rgba(252,249,246,0.7)", margin: 0,
-                  }}>{text}</p>
+                  <p
+                    style={{
+                      fontFamily: T.body,
+                      fontSize: "12.5px",
+                      lineHeight: 1.62,
+                      letterSpacing: "-0.01em",
+                      color: "rgba(252,249,246,0.7)",
+                      margin: 0,
+                    }}
+                  >
+                    {text}
+                  </p>
                 </li>
               ))}
             </ul>
@@ -415,23 +624,35 @@ export default function Footer() {
         <div
           ref={barRef}
           style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            flexWrap: "wrap", gap: "12px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "12px",
             padding: "16px clamp(28px,5.5vw,72px)",
             opacity: 0,
           }}
         >
-          <p style={{
-            fontFamily: T.body, fontSize: "11px",
-            letterSpacing: "0.4px", color: "rgba(252,249,246,0.38)",
-          }}>
-            © {new Date().getFullYear()} Makassar Golden Hotel. Semua hak dilindungi.
+          <p
+            style={{
+              fontFamily: T.body,
+              fontSize: "11px",
+              letterSpacing: "0.4px",
+              color: "rgba(252,249,246,0.38)",
+            }}
+          >
+            © {new Date().getFullYear()} Makassar Golden Hotel. Semua hak
+            dilindungi.
           </p>
-          <p style={{
-            fontFamily: T.body, fontSize: "9px",
-            letterSpacing: "2px", textTransform: "uppercase",
-            color: "rgba(252,249,246,0.26)",
-          }}>
+          <p
+            style={{
+              fontFamily: T.body,
+              fontSize: "9px",
+              letterSpacing: "2px",
+              textTransform: "uppercase",
+              color: "rgba(252,249,246,0.26)",
+            }}
+          >
             Heritage Hotel · Sulawesi Selatan
           </p>
         </div>
@@ -471,7 +692,6 @@ export default function Footer() {
             Makassar Golden Hotel
           </p>
         </div>
-
       </div>
     </footer>
   );

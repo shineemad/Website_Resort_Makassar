@@ -33,6 +33,18 @@ function FinaleInterlude() {
   const [imgIndex, setImgIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
 
+  /* ── Mobile fallback: auto-cycle a single polaroid every 3.2s ── */
+  const [mobileImgIndex, setMobileImgIndex] = useState(0);
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    const isCoarse = window.matchMedia("(pointer: coarse)").matches;
+    if (!isCoarse) return;
+    const id = window.setInterval(() => {
+      setMobileImgIndex((i) => (i + 1) % HOVER_IMAGES.length);
+    }, 3200);
+    return () => window.clearInterval(id);
+  }, [prefersReducedMotion]);
+
   useEffect(() => {
     if (prefersReducedMotion) return;
     const isFine = window.matchMedia("(pointer: fine)").matches;
@@ -511,6 +523,48 @@ function FinaleInterlude() {
           margin: 0 auto;
         }
 
+        /* ── Mobile-only polaroid (auto-cycle) ── */
+        .fi-mobile-polaroid {
+          position: relative;
+          width: clamp(180px, 56vw, 260px);
+          aspect-ratio: 3 / 4;
+          margin: 28px auto 8px;
+          overflow: hidden;
+          background: rgba(36,18,8,0.06);
+          box-shadow:
+            0 18px 36px rgba(36,18,8,0.18),
+            0 4px 10px rgba(36,18,8,0.1);
+        }
+        .fi-mp-img {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          opacity: 0;
+          transform: scale(1.04);
+          transition:
+            opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+            transform 4000ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .fi-mp-img.is-active {
+          opacity: 1;
+          transform: scale(1);
+        }
+        .fi-mp-frame {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          border: 0.8px solid rgba(36,18,8,0.32);
+        }
+        @media (min-width: 1024px) {
+          .fi-mobile-polaroid { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .fi-mp-img { transition: none; }
+        }
+
         /* ── Cursor follower image ── */
         .fi-cursor-img {
           position: fixed;
@@ -519,7 +573,7 @@ function FinaleInterlude() {
           width: clamp(140px, 14vw, 200px);
           aspect-ratio: 3 / 4;
           overflow: hidden;
-          border-radius: 2px;
+          border-radius: 0;
           box-shadow:
             0 28px 56px rgba(36,18,8,0.22),
             0 8px 18px rgba(36,18,8,0.14);
@@ -777,6 +831,21 @@ function FinaleInterlude() {
             </motion.p>
 
             <span aria-hidden="true" className="fi-divider-line mt-4" />
+
+            {/* Mobile-only auto-cycling polaroid (replaces desktop cursor follower) */}
+            <div className="fi-mobile-polaroid lg:hidden" aria-hidden="true">
+              {HOVER_IMAGES.map((src, i) => (
+                <img
+                  key={src}
+                  src={src}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className={`fi-mp-img${i === mobileImgIndex ? " is-active" : ""}`}
+                />
+              ))}
+              <span className="fi-mp-frame" aria-hidden="true" />
+            </div>
 
             <motion.h2
               className="fi-reveal mt-8 max-w-[18ch] text-4xl sm:text-5xl lg:text-[62px]"

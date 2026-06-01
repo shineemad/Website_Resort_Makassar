@@ -1234,6 +1234,18 @@ function FeaturedRooms() {
                 <button
                   type="button"
                   className="fr-cta"
+                  onClick={() => {
+                    const el = document.getElementById("finale-interlude");
+                    if (!el) return;
+                    const reduced = window.matchMedia(
+                      "(prefers-reduced-motion: reduce)",
+                    ).matches;
+                    el.scrollIntoView({
+                      behavior: reduced ? "auto" : "smooth",
+                      block: "start",
+                    });
+                  }}
+                  aria-label={`Reservasi ${ROOM_DATA[activeCard]?.name ?? "kamar"}`}
                   style={{
                     fontFamily: T.body,
                     fontSize: "12px",
@@ -1250,7 +1262,7 @@ function FeaturedRooms() {
                     flexShrink: 0,
                   }}
                 >
-                  Lihat Detail
+                  Reservasi Sekarang
                   <ArrowUpRight size={12} strokeWidth={1.8} />
                 </button>
               </div>
